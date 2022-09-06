@@ -2,7 +2,7 @@ DROP TABLE ers_reimbursements;
 
 CREATE TABLE ers_reimbursements(
 	reimb_id varchar PRIMARY KEY,
-	amount decimal NOT NULL,
+	amount numeric(6,2) NOT NULL,
 	submitted timestamp NOT NULL,
 	resolved timestamp NOT NULL,
 	description varchar NOT NULL,
@@ -40,7 +40,7 @@ CREATE TABLE ers_users (
 	PASSWORD varchar NOT NULL,
 	given_name varchar NOT NULL,
 	surname varchar NOT NULL,
-	is_active BIT, 
+	is_active BOOLEAN, 
 	role_id varchar
 );
 

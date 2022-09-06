@@ -1,14 +1,8 @@
 package com.github.Nick.users;
 
-import java.util.Objects;
+//response DTO
+public class UserResponse {
 
-//POJO = Plain Ol' Java Object
-public class User {
-
-    private final String yellowText = "\u001B[33m";
-    private final String defaultText = "\u001B[0m";
-
-    // new
     private String user_id;
     private String username;
     private String email;
@@ -18,9 +12,16 @@ public class User {
     private boolean is_active;
     private String role_id;
 
-    //private String role;
+    public UserResponse (User subject) {
+        this.user_id = subject.getUser_id();
+        this.username = subject.getUsername();
+        this.email = subject.getEmail();
+        this.given_name = subject.getGiven_name();
+        this.surname = subject.getSurname();
+        this.is_active = subject.getIs_active();
+        this.role_id = subject.getRole_id();
+    }
 
-    // new
     public void setUser_id (String user_id) {
         this.user_id = user_id;
     }
@@ -43,14 +44,6 @@ public class User {
 
     public String getEmail() {
         return email;
-    }
-
-    public void setPassword (String password) {
-        this.password = password;
-    }
-
-    public String getPassword() {
-        return password;
     }
 
     public void setGiven_name (String given_name) {
@@ -85,47 +78,17 @@ public class User {
         return role_id;
     }
 
-    // public void setRole (String role) {
-    //     this.role = role;
-    // }
-
-    // public String getRole() {
-    //     return role;
-    // }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        User user = (User) o;
-        return Objects.equals(user_id, user.user_id)
-            && Objects.equals(username, user.username) && Objects.equals(email, user.email) && Objects.equals(password, user.password)
-            && Objects.equals(given_name, user.given_name) && Objects.equals(surname, user.surname)
-            && Objects.equals(is_active, user.is_active) && Objects.equals(role_id, user.role_id);
-            // && Objects.equals(role, user.role);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(user_id, username, email, password, given_name, surname, is_active, role_id);
-    }
-
     @Override
     public String toString() {
         return  "User " + "{" +
                 "user_id = '" + user_id +  "' " +
                 "username = '" + username + "' " +
                 "email = '" + email + "' " +
-                "password = '" + password + "' " +
                 "given_name = '" + given_name + "' " +
                 "surname = '" + surname + "' " +
                 "is_active = '" + is_active + "' " +
                 "role_id = '" + role_id + "' " +
                 "'}";
     }
+    
 }
-
-/*  set user's id, name, and task from the user or get their 
- * information from the database. Displays the current data
- * from the database useing the above format.
- */
