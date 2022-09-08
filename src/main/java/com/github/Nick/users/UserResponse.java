@@ -1,16 +1,16 @@
 package com.github.Nick.users;
 
-//response DTO
+//* Response DTO
 public class UserResponse {
 
     private String user_id;
     private String username;
     private String email;
-    private String password;
+    //! private String password;
     private String given_name;
     private String surname;
     private boolean is_active;
-    private String role_id;
+    private String role;
 
     public UserResponse (User subject) {
         this.user_id = subject.getUser_id();
@@ -19,7 +19,7 @@ public class UserResponse {
         this.given_name = subject.getGiven_name();
         this.surname = subject.getSurname();
         this.is_active = subject.getIs_active();
-        this.role_id = subject.getRole_id();
+        this.role = subject.getRole();
     }
 
     public void setUser_id (String user_id) {
@@ -70,12 +70,12 @@ public class UserResponse {
         return is_active;
     }
 
-    public void setRole_id (String role_id) {
-        this.role_id = role_id;
+    public void setRole (String role) {
+        this.role = role;
     }
 
-    public String getRole_id() {
-        return role_id;
+    public String getRole() {
+        return role;
     }
 
     @Override
@@ -87,8 +87,7 @@ public class UserResponse {
                 "given_name = '" + given_name + "' " +
                 "surname = '" + surname + "' " +
                 "is_active = '" + is_active + "' " +
-                "role_id = '" + role_id + "' " +
+                "role = '" + role + "' " +
                 "'}";
     }
-    
 }

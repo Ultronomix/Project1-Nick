@@ -12,11 +12,14 @@ import java.util.Optional;
 import com.github.Nick.common.datasource.ConnectionFactory;
 import com.github.Nick.common.exceptions.DataSourceException;
 
-// DAO = Data Access Object 
+//* DAO = Data Access Object 
 public class UserDAO {
 
-    private final String baseSelect = "SELECT * " +
-                                        "FROM ers_users";
+    private final String baseSelect = "SELECT eu.user_id, eu.username, eu.email, eu.password, " +
+                                        "eu.given_name, eu.surname, " +
+                                        "eu.is_active, eur.role " +
+                                        "FROM ers_users eu " +
+                                        "JOIN ers_user_roles eur ON eu.role_id = eur.role_id ";
 
     public List<User> getAllUsers() {
 
@@ -29,7 +32,7 @@ public class UserDAO {
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(sql);
 
-            allUsers = mapResultSet2(rs);
+            allUsers = mapResultSet(rs);
 
         } catch (SQLException e) {
             System.err.println("Something went wrong when connection to database.");
@@ -38,6 +41,7 @@ public class UserDAO {
         return allUsers;
     }
 
+    //TODO convert to new database
     // public String deleteEntry(User user) {
 
     //     String sqlDelete = "DELETE FROM tasks.user_task " +
@@ -58,59 +62,47 @@ public class UserDAO {
     //     }
     //     return "Entry removed";
     // }
+    //TODO edit
+    public String save(User user) {
+        String sql = "INSERT INTO ers_users (user_id, username, email, password, given_name, surname, is_active, role_id) " +
+                        "VALUES (?, ?, ?, ?, ?, ?, ?, '3')";
 
-    // public String save(User user) {
-    //     String sql = "INSERT INTO tasks.user_task(name, task) " +
-    //             "VALUES(?, ?)";
+        try (Connection conn = ConnectionFactory.getInstance().getConnection()) {
 
-    //     try (Connection conn = ConnectionFactory.getInstance().getConnection()) {
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            System.out.println("id: " + user.getUser_id());
+            pstmt.setString(1, user.getUser_id().trim());
+            System.out.println("username: " + user.getUsername());
+            pstmt.setString(2, user.getUsername().trim());
+            System.out.println("email: " + user.getEmail());
+            pstmt.setString(3, user.getEmail().trim());
+            System.out.println("password: " + user.getPassword());
+            pstmt.setString(4, user.getPassword().trim());
+            System.out.println("name: " + user.getGiven_name());
+            pstmt.setString(5, user.getGiven_name().trim());
+            System.out.println("surname: " + user.getSurname());
+            pstmt.setString(6, user.getSurname().trim());
+            System.out.println("Active: " + user.getIs_active());
+            pstmt.setBoolean(7, user.getIs_active());
+            pstmt.executeUpdate();
 
-    //         PreparedStatement pstmt = conn.prepareStatement(sql);
-    //         pstmt.setString(1, user.getName().trim().toUpperCase());
-    //         pstmt.setString(2, user.getTask().trim());
+        } catch (Exception e) {
+            System.err.println("Something went wrong when connecting to database.");
+            e.printStackTrace();
+        }
+        return user.getUsername() + " added.";
+    }
 
-    //         pstmt.executeUpdate();
+    public Optional<User> findUserByUsername(String username) {
 
-    //     } catch (Exception e) {
-    //         System.err.println("Something went wrong when connecting to database.");
-    //         e.printStackTrace();
-    //     }
-    //     return user.getName() + " " + user.getTask();
-    // }
-
-    // public Optional<User> findUserNameByName(String name) {
-
-    //     String sql = baseSelect + "WHERE name = ?";
-
-    //     try (Connection conn = ConnectionFactory.getInstance().getConnection()) {
-
-    //         PreparedStatement pstmt = conn.prepareStatement(sql);
-    //         pstmt.setString(1, name.toUpperCase());
-    //         ResultSet rs = pstmt.executeQuery();
-
-    //         return mapResultSet(rs).stream().findFirst();
-
-    //     } catch (SQLException e) {
-    //         System.err.println("Something went wrong when connection to database.");
-    //         e.printStackTrace();
-    //     }
-    //     return Optional.empty();
-    // }
-
-    private final String ers_users = "SELECT * FROM ers_users eu";
-
-    public Optional<User> findUserNameByNameErs(String username, String password) {
-
-        String sql = ers_users + " WHERE eu.username = ? AND eu.password = ?";
+        String sql = baseSelect + "WHERE eu.username = ?";
 
         try (Connection conn = ConnectionFactory.getInstance().getConnection()) {
 
             PreparedStatement pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, username);
-            pstmt.setString(2, password);
             ResultSet rs = pstmt.executeQuery();
-
-            return mapResultSet2(rs).stream().findFirst();
+            return mapResultSet(rs).stream().findFirst();
 
         } catch (SQLException e) {
             //TODO log exception
@@ -118,6 +110,64 @@ public class UserDAO {
         }
     }
 
+    public boolean isUsernameTaken (String username) {
+        return findUserByUsername(username).isPresent();
+    }
+
+    public Optional<User> findUserByEmail(String email) {
+
+        String sql = baseSelect + "WHERE eu.email = ?";
+
+        try (Connection conn = ConnectionFactory.getInstance().getConnection()) {
+
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, email);
+            ResultSet rs = pstmt.executeQuery();
+            return mapResultSet(rs).stream().findFirst();
+
+        } catch (SQLException e) {
+            //TODO log exception
+            throw new DataSourceException(e);
+        }
+    }
+
+    public boolean isEmailTaken (String email) {
+        return findUserByEmail(email).isPresent();
+    }
+
+
+    private List<User> mapResultSet(ResultSet rs) throws SQLException {
+        List<User> users = new ArrayList<>();
+        while (rs.next()) {
+            User user = new User();
+            user.setUser_id(rs.getString("user_id"));
+            user.setUsername(rs.getString("username"));
+            user.setEmail(rs.getString("email"));
+            //! user.setPassword(rs.getString("password"));
+            user.setGiven_name(rs.getString("given_name"));
+            user.setSurname(rs.getString("surname"));
+            user.setIs_active(rs.getBoolean("is_active"));
+            user.setRole(rs.getString("role"));
+            users.add(user);
+        }
+        return users;
+    }
+
+    //TODO Move log
+    public void log(String level, String message) {
+        try {
+            File logFile = new File("src/main/resources/app.log");
+            logFile.createNewFile();
+            BufferedWriter logWriter = new BufferedWriter(new FileWriter(logFile, true));
+            logWriter.write(String.format("\n[%s] at %s logged [%s] %s", Thread.currentThread().getName(), LocalDate.now(), level.toUpperCase(), message));
+            logWriter.flush();
+            logWriter.close();
+        } catch (Exception e) {
+            // TODO: handle exception
+            throw new RuntimeException(e);
+        }
+    }
+    //! Remove
     public String testLog() {
         
         try (Connection conn = ConnectionFactory.getInstance().getConnection()) {
@@ -131,38 +181,8 @@ public class UserDAO {
         }
         return "Done";
     }
-
-    private List<User> mapResultSet2(ResultSet rs) throws SQLException {
-        List<User> users = new ArrayList<>();
-        while (rs.next()) {
-            User user = new User();
-            user.setUser_id(rs.getString("user_id"));
-            user.setUsername(rs.getString("username"));
-            user.setEmail(rs.getString("email"));
-            user.setPassword(rs.getString("password"));
-            user.setGiven_name(rs.getString("given_name"));
-            user.setSurname(rs.getString("surname"));
-            user.setIs_active(rs.getBoolean("is_active"));
-            user.setRole_id(rs.getString("role_id"));
-            users.add(user);
-        }
-        return users;
-    }
-
-    public void log(String level, String message) {
-        try {
-            File logFile = new File("src/main/resources/app.log");
-            logFile.createNewFile();
-            BufferedWriter logWriter = new BufferedWriter(new FileWriter(logFile, true));
-            logWriter.write(String.format("\n[%s] at %s logged [%s] %s", Thread.currentThread().getName(), LocalDate.now(), level.toUpperCase(), message));
-            logWriter.flush();
-        } catch (Exception e) {
-            // TODO: handle exception
-            throw new RuntimeException(e);
-        }
-    }
 }
 
-/*  DAO that gets all users from the database, delete a user
+/** DAO that gets all users from the database, delete a user
  * from the database, or saves a user to the database.
  */

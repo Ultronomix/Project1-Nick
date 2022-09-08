@@ -2,13 +2,12 @@ package com.github.Nick.users;
 
 import java.util.Objects;
 
-//POJO = Plain Ol' Java Object
+//* POJO = Plain Ol' Java Object
 public class User {
-
+    //! Delete
     private final String yellowText = "\u001B[33m";
     private final String defaultText = "\u001B[0m";
 
-    // new
     private String user_id;
     private String username;
     private String email;
@@ -16,11 +15,8 @@ public class User {
     private String given_name;
     private String surname;
     private boolean is_active;
-    private String role_id;
+    private String role;
 
-    //private String role;
-
-    // new
     public void setUser_id (String user_id) {
         this.user_id = user_id;
     }
@@ -77,21 +73,21 @@ public class User {
         return is_active;
     }
 
-    public void setRole_id (String role_id) {
-        this.role_id = role_id;
+    //! public void setRole_id (String role_id) {
+    //!     this.role_id = role_id;
+    //! }
+
+    //! public String getRole_id() {
+    //!     return role_id;
+    //! }
+
+    public void setRole (String role) {
+        this.role = role;
     }
 
-    public String getRole_id() {
-        return role_id;
+    public String getRole() {
+        return role;
     }
-
-    // public void setRole (String role) {
-    //     this.role = role;
-    // }
-
-    // public String getRole() {
-    //     return role;
-    // }
 
     @Override
     public boolean equals(Object o) {
@@ -99,15 +95,15 @@ public class User {
         if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
         return Objects.equals(user_id, user.user_id)
-            && Objects.equals(username, user.username) && Objects.equals(email, user.email) && Objects.equals(password, user.password)
-            && Objects.equals(given_name, user.given_name) && Objects.equals(surname, user.surname)
-            && Objects.equals(is_active, user.is_active) && Objects.equals(role_id, user.role_id);
-            // && Objects.equals(role, user.role);
+            && Objects.equals(username, user.username) && Objects.equals(email, user.email) 
+            && Objects.equals(password, user.password) && Objects.equals(given_name, user.given_name)
+            && Objects.equals(surname, user.surname) && Objects.equals(is_active, user.is_active) 
+            && Objects.equals(role, user.role);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(user_id, username, email, password, given_name, surname, is_active, role_id);
+        return Objects.hash(user_id, username, email, password, given_name, surname, is_active, role);
     }
 
     @Override
@@ -120,12 +116,12 @@ public class User {
                 "given_name = '" + given_name + "' " +
                 "surname = '" + surname + "' " +
                 "is_active = '" + is_active + "' " +
-                "role_id = '" + role_id + "' " +
+                "role = '" + role + "' " +
                 "'}";
     }
 }
 
-/*  set user's id, name, and task from the user or get their 
+/** set user's id, name, and task from the user or get their 
  * information from the database. Displays the current data
- * from the database useing the above format.
+ * from the database using the above format.
  */

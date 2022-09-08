@@ -6,7 +6,7 @@ CREATE TABLE ers_reimbursements(
 	submitted timestamp NOT NULL,
 	resolved timestamp NOT NULL,
 	description varchar NOT NULL,
-	payment_id varchar,
+	payment_id bytea,
 	author_id varchar NOT NULL,
 	resolver_id varchar,
 	status_id varchar NOT NULL,
@@ -46,7 +46,7 @@ CREATE TABLE ers_users (
 
 ALTER TABLE ers_users
 ADD FOREIGN KEY (role_id)
-REFERENCES ers.ers_user_roles(role_id);
+REFERENCES ers_user_roles(role_id);
 
 CREATE TABLE ers_reimbursement_statuses (
 	status_id varchar PRIMARY KEY,
@@ -65,6 +65,8 @@ CREATE TABLE ers_user_roles (
 	ROLE varchar UNIQUE
 );
 
+SELECT * 
+FROM ers_reimbursements er; 
 SELECT *
 FROM ers_reimbursement_statuses ers ;
 

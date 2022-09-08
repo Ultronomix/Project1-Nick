@@ -1,8 +1,5 @@
 package com.github.Nick.common.util;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-
 import com.github.Nick.users.UserDAO;
 
 public class AppContext {
