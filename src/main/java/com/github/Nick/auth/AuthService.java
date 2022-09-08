@@ -19,7 +19,7 @@ public class AuthService {
             //TODO replace with a custom exception
             throw new InvalidRequestException("The provided credentials are invalid");
         }
-        return userDAO.findUserByUsername(credentials.getUsername())
+        return userDAO.findUserByUsernameAndPassword(credentials.getUsername(), credentials.getPassword())
                 .map(UserResponse :: new).orElseThrow(AuthenticationException::new);
     }
 }

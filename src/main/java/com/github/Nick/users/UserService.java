@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import com.github.Nick.common.ResourceCreationResponse;
 import com.github.Nick.common.exceptions.InvalidRequestException;
+import com.github.Nick.common.exceptions.ResourceNotFoundException;
 import com.github.Nick.common.exceptions.ResourcePersistenceException;
 
 public class UserService {
@@ -28,6 +29,16 @@ public class UserService {
             result.add(new UserResponse(user));
         }
         return result;
+    }
+
+    public UserResponse getUserbyID (String id) {
+        if (id == null || id.trim().length() <= 0) {
+            throw new InvalidRequestException("An id must be provided");
+        }
+        // for uuid use try UUID uuid = uuid.fromString(id) return uuid
+        //catch(IllegalArgumentException e)
+        return userDAO.findUserById(id).map(UserResponse::new)
+                        .orElseThrow(ResourceNotFoundException::new);
     }
 
     public ResourceCreationResponse register (NewUserRequest newUser) {
