@@ -146,6 +146,23 @@ public class UserDAO {
         }
     }
 
+    public Optional<User> findUserByRole(String role) {
+
+        String sql = baseSelect + "WHERE eur.role = ?";
+
+        try (Connection conn = ConnectionFactory.getInstance().getConnection()) {
+
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, role);
+            ResultSet rs = pstmt.executeQuery();
+            return mapResultSet(rs).stream().findFirst();
+
+        } catch (SQLException e) {
+            //TODO log exception
+            throw new DataSourceException(e);
+        }
+    }
+
     public boolean isUsernameTaken (String username) {
         return findUserByUsername(username).isPresent();
     }

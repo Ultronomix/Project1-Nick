@@ -5,6 +5,7 @@ import org.apache.catalina.startup.Tomcat;
 
 import com.github.Nick.auth.AuthService;
 import com.github.Nick.auth.AuthServlet;
+
 import com.github.Nick.users.UserDAO;
 import com.github.Nick.users.UserService;
 import com.github.Nick.users.UserServlet;
@@ -35,6 +36,7 @@ public class Reimbursement {
         webServer.addContext(rootContext, docBase);
         webServer.addServlet(rootContext, "UserServlet", userServlet).addMapping("/users");
         webServer.addServlet(rootContext, "AuthServlet", authServlet).addMapping("/auth");
+        
         //TODO complete
         //? webServer.addContext(rootContext, "ReimbursementServlet", reimbursementServlet).addMapping("/reimbursement");
         

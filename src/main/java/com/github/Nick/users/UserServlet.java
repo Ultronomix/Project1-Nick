@@ -38,13 +38,24 @@ public class UserServlet extends HttpServlet {
         resp.setContentType("application/json");
 
         String idToSearchFor = req.getParameter("id");
+        String usernameToSearchFor = req.getParameter("username");
+        String roleToSearch = req.getParameter("role");
 
         try {
-            if(idToSearchFor == null) {
+            if(idToSearchFor == null && usernameToSearchFor == null && roleToSearch == null) {
                 List<UserResponse> allUsers = userService.getAllUsers();
                 resp.getWriter().write(jsonMapper.writeValueAsString(allUsers));
-            } else {
+            }
+            if(idToSearchFor != null) {
                 UserResponse foundUser = userService.getUserbyID(idToSearchFor);
+                resp.getWriter().write(jsonMapper.writeValueAsString(foundUser));
+            }
+            if(usernameToSearchFor != null) {
+                UserResponse foundUser = userService.getUserbyUsername(usernameToSearchFor);
+                resp.getWriter().write(jsonMapper.writeValueAsString(foundUser));
+            }
+            if(roleToSearch != null) {
+                UserResponse foundUser = userService.getUserByRole(roleToSearch);
                 resp.getWriter().write(jsonMapper.writeValueAsString(foundUser));
             }
         } catch (InvalidRequestException | JsonMappingException e) {

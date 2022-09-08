@@ -41,6 +41,22 @@ public class UserService {
                         .orElseThrow(ResourceNotFoundException::new);
     }
 
+    public UserResponse getUserbyUsername (String username) {
+        if (username == null || username.trim().length() < 4) {
+            throw new InvalidRequestException("A username must be at least 4 characters");
+        }
+        return userDAO.findUserByUsername(username).map(UserResponse::new)
+                        .orElseThrow(ResourceNotFoundException::new);
+    }
+
+    public UserResponse getUserByRole (String role) {
+        if (role == null || role.trim().length() <= 0) {
+            throw new InvalidRequestException("A role must be provided.");
+        }
+        return userDAO.findUserByRole(role).map(UserResponse::new)
+                        .orElseThrow(ResourceNotFoundException::new);
+    }
+
     public ResourceCreationResponse register (NewUserRequest newUser) {
         //TODO edit with database
 
