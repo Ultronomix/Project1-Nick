@@ -93,6 +93,42 @@ public class UserDAO {
         return user.getUsername() + " added.";
     }
 
+    public Optional<User> findUserByUsernameAndPassword(String username, String password) {
+
+        String sql = baseSelect + "WHERE eu.username = ? and eu.password = ?";
+
+        try (Connection conn = ConnectionFactory.getInstance().getConnection()) {
+
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, username);
+            pstmt.setString(2, password);
+            ResultSet rs = pstmt.executeQuery();
+            return mapResultSet(rs).stream().findFirst();
+
+        } catch (SQLException e) {
+            //TODO log exception
+            throw new DataSourceException(e);
+        }
+    }
+    // for uuid change string to uuid
+    public Optional<User> findUserById(String id) {
+
+        String sql = baseSelect + "WHERE eu.user_id = ?";
+
+        try (Connection conn = ConnectionFactory.getInstance().getConnection()) {
+
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            //for uuid change setString to setObject
+            pstmt.setString(1, id);
+            ResultSet rs = pstmt.executeQuery();
+            return mapResultSet(rs).stream().findFirst();
+
+        } catch (SQLException e) {
+            //TODO log exception
+            throw new DataSourceException(e);
+        }
+    }
+
     public Optional<User> findUserByUsername(String username) {
 
         String sql = baseSelect + "WHERE eu.username = ?";
