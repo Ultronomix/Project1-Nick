@@ -1,7 +1,9 @@
 package com.github.Nick.users;
 
+import java.io.Serializable;
+
 //* Response DTO
-public class UserResponse {
+public class UserResponse implements Serializable{
 
     private String user_id;
     private String username;

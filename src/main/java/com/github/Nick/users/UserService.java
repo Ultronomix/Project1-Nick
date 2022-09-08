@@ -2,7 +2,6 @@ package com.github.Nick.users;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import com.github.Nick.common.ResourceCreationResponse;
 import com.github.Nick.common.exceptions.InvalidRequestException;

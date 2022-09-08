@@ -11,6 +11,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -37,7 +38,32 @@ public class UserServlet extends HttpServlet {
         ObjectMapper jsonMapper = new ObjectMapper();
         resp.setContentType("application/json");
 
+        HttpSession userSession = req.getSession(false);
+
+        // if null, this mean that the requester is not authenticated with server
+        if (userSession == null) {
+            resp.setStatus(401); // Unauthorized
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("statusCode", 401);
+            errorResponse.put("message", "Requester is not authenticated with server, log in.");
+            errorResponse.put("timestamp", LocalDateTime.now().format(format));
+            resp.getWriter().write(jsonMapper.writeValueAsString(errorResponse));
+            return;
+        }
+
         String idToSearchFor = req.getParameter("id");
+        UserResponse requester = (UserResponse) userSession.getAttribute("authUser");
+
+        if (!requester.getRole().equals("CEO") && !requester.getUser_id().equals(idToSearchFor)) {
+            resp.setStatus(403); // Forbidden
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("statusCode", 403);
+            errorResponse.put("message", "Requester not permitted to communicate with this endpoint.");
+            errorResponse.put("timestamp", LocalDateTime.now().format(format));
+            resp.getWriter().write(jsonMapper.writeValueAsString(errorResponse));
+            return;
+        }
+
         String usernameToSearchFor = req.getParameter("username");
         String roleToSearch = req.getParameter("role");
 
