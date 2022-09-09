@@ -43,17 +43,18 @@ public class UserServlet extends HttpServlet {
             return;
         }
 
-        String idToSearchFor = req.getParameter("id");
         UserResponse requester = (UserResponse) userSession.getAttribute("authUser");
 
-        if (!requester.getRole().equals("CEO") || requester.getUser_id().equals(idToSearchFor)) {
+        String idToSearchFor = req.getParameter("id");
+        String roleToSearchFor = req.getParameter("role");
+        String usernameToSearchFor = req.getParameter("username");
+        String roleToSearch = req.getParameter("role");
+
+        if ((!requester.getRole().equals("CEO") && !requester.getRole().equals("ADMIN")) && !requester.getUser_id().equals(idToSearchFor) && !requester.getRole().equals(roleToSearchFor)) {
             resp.setStatus(403); // Forbidden
             resp.getWriter().write(jsonMapper.writeValueAsString(new ErrorResponse(403, "Requester not permitted to communicate with this endpoint.")));
             return;
         }
-
-        String usernameToSearchFor = req.getParameter("username");
-        String roleToSearch = req.getParameter("role");
 
         try {
             if(idToSearchFor == null && usernameToSearchFor == null && roleToSearch == null) {
@@ -90,6 +91,7 @@ public class UserServlet extends HttpServlet {
         // resp.getWriter().write(("Post to /users works"));
         ObjectMapper jsonMapper = new ObjectMapper();
         resp.setContentType("application/json");
+
         try {
             ResourceCreationResponse responseBody = userService
                     .register(jsonMapper.readValue(req.getInputStream(), NewUserRequest.class));
@@ -104,5 +106,38 @@ public class UserServlet extends HttpServlet {
             resp.setStatus(500); // * internal error
             resp.getWriter().write(jsonMapper.writeValueAsString(new ErrorResponse(500, e.getMessage())));
         }
+    }
+
+    //TODO
+    @Override
+    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        //! delete
+        resp.getWriter().write("In Progress");
+
+        ObjectMapper jsonMapper = new ObjectMapper();
+        resp.setContentType("application/json");
+
+         // Access the HTTP session on the request
+        HttpSession userSession = req.getSession(false);
+
+         // if null, this mean that the requester is not authenticated with server
+        if (userSession == null) {
+            resp.setStatus(401); // Unauthorized
+            resp.getWriter().write(jsonMapper.writeValueAsString(new ErrorResponse(401, "Requester is not authenticated with server, log in.")));
+            return;
+        }
+
+        UserResponse requester = (UserResponse) userSession.getAttribute("authUser");
+        String idToSearchFor = req.getParameter("id");
+
+        if (!requester.getRole().equals("CEO") && !requester.getRole().equals("ADMIN")) {
+            resp.setStatus(403); // Forbidden
+            resp.getWriter().write(jsonMapper.writeValueAsString(new ErrorResponse(403, "Requester not permitted to communicate with this endpoint.")));
+            return;
+        }
+
+        UserResponse foundUser = userService.getUserbyID(idToSearchFor);
+        resp.getWriter().write(jsonMapper.writeValueAsString(foundUser));
+
     }
 }

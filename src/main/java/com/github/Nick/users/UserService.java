@@ -16,6 +16,7 @@ public class UserService {
         this.userDAO = userDAO;
     }
 
+    //? Get all users
     public List<UserResponse> getAllUsers() {
         //* Functional approach (more declarative)
         //? return userDAO.getAllUsers().stream()
@@ -30,6 +31,7 @@ public class UserService {
         return result;
     }
 
+    //? Search for User by user_id
     public UserResponse getUserbyID (String id) {
         if (id == null || id.trim().length() <= 0) {
             throw new InvalidRequestException("An id must be provided");
@@ -39,7 +41,7 @@ public class UserService {
         return userDAO.findUserById(id).map(UserResponse::new)
                         .orElseThrow(ResourceNotFoundException::new);
     }
-
+    //? Search for User by username
     public UserResponse getUserbyUsername (String username) {
         if (username == null || username.trim().length() < 4) {
             throw new InvalidRequestException("A username must be at least 4 characters");
@@ -48,6 +50,7 @@ public class UserService {
                         .orElseThrow(ResourceNotFoundException::new);
     }
 
+    //? Search for User by role
     public UserResponse getUserByRole (String role) {
         if (role == null || role.trim().length() <= 0) {
             throw new InvalidRequestException("A role must be provided.");
@@ -56,6 +59,7 @@ public class UserService {
                         .orElseThrow(ResourceNotFoundException::new);
     }
 
+    //? Register a new user
     public ResourceCreationResponse register (NewUserRequest newUser) {
         //TODO edit with database
 
@@ -92,4 +96,9 @@ public class UserService {
         String newUserId = userDAO.save(userToPersist);
         return new ResourceCreationResponse(newUserId);
     }
+
+    //? Update user's active status
+    
+
+
 }

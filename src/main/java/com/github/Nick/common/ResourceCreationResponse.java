@@ -1,6 +1,7 @@
 package com.github.Nick.common;
 
 public class ResourceCreationResponse {
+    
     private String resourceId;
 
     public ResourceCreationResponse(String resourceId) {
