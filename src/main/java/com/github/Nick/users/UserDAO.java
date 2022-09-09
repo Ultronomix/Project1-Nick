@@ -188,6 +188,36 @@ public class UserDAO {
         return findUserByEmail(email).isPresent();
     }
 
+    public String updateUser (UpdateUserRequest updateUserRequest) {
+
+        return null;
+    }
+
+    public String updateUserEmail (String email, String user_id) {
+
+        String sql = "UPDATE ers_users SET email = ? WHERE user_id = '2'";
+
+        try (Connection conn = ConnectionFactory.getInstance().getConnection()) {
+
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            System.out.println(email);
+            pstmt.setString(1, email);
+            System.out.println(user_id);
+            // pstmt.setString(2, "2");
+            // ResultSet rs = 
+            System.out.println("pstmt: " + pstmt);
+            pstmt.executeUpdate();
+            // pstmt.executeQuery();
+            System.out.println("4");
+            return "email added";
+            // mapResultSet(rs).stream().findFirst();
+
+        } catch (SQLException e) {
+            //TODO log exception
+            throw new DataSourceException(e);
+        }
+        // return "Update Email check";
+    }
 
     private List<User> mapResultSet(ResultSet rs) throws SQLException {
         List<User> users = new ArrayList<>();

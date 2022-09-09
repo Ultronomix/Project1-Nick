@@ -98,7 +98,34 @@ public class UserService {
     }
 
     //? Update user's active status
-    
+    public ResourceCreationResponse updateUser (UpdateUserRequest updateUser, String idToSearchFor) {
 
+        if (updateUser == null) {
+            throw new InvalidRequestException("Provided request payload was null.");
+        }
+        if (updateUser.getEmail() != null && updateUser.getEmail().trim().length() > 3) {
+            userDAO.updateUserEmail(updateUser.getEmail(), idToSearchFor);
+            // throw new InvalidRequestException("Email cannot be empty");
+        }
+        if (updateUser.getGiven_name() != null && updateUser.getGiven_name().trim().length() > 4) {
+            // updateUserGivenName(updateUser.getGiven_Name)
+            // throw new InvalidRequestException("A empty given name or surname");
+        }
+        if (updateUser.getSurname() != null && updateUser.getSurname().trim().length() > 4) {
+            // updateUserSurname(updateUser.getSurname)
+            // throw new InvalidRequestException("A empty given name or surname");
+        }
+        if (updateUser.getIs_active() == false || updateUser.getIs_active() == true) {
+            // updateUserIsActive(updateUser.getIs_active)
+            // throw new InvalidRequestException("A empty given name or surname");
+        }
 
+        String userToUpdate = updateUser.extractEntity().getEmail();
+        System.out.println(userToUpdate);
+        String updateEmail = userDAO.updateUserEmail(userToUpdate, idToSearchFor);
+        System.out.println("update: " + updateEmail);
+        // TODO create DAO
+        // String updatedUser = userDAO.update(userToUpdate);
+        return new ResourceCreationResponse(updateEmail);
+    }
 }

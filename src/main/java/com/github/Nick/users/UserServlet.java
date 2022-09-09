@@ -112,7 +112,7 @@ public class UserServlet extends HttpServlet {
     @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         //! delete
-        resp.getWriter().write("In Progress");
+        resp.getWriter().write("In Progress\n");
 
         ObjectMapper jsonMapper = new ObjectMapper();
         resp.setContentType("application/json");
@@ -128,16 +128,34 @@ public class UserServlet extends HttpServlet {
         }
 
         UserResponse requester = (UserResponse) userSession.getAttribute("authUser");
-        String idToSearchFor = req.getParameter("id");
 
+        // Only CEO and ADMIN access
         if (!requester.getRole().equals("CEO") && !requester.getRole().equals("ADMIN")) {
             resp.setStatus(403); // Forbidden
             resp.getWriter().write(jsonMapper.writeValueAsString(new ErrorResponse(403, "Requester not permitted to communicate with this endpoint.")));
             return;
         }
 
+        // Find user to update
+        String idToSearchFor = req.getParameter("id");
         UserResponse foundUser = userService.getUserbyID(idToSearchFor);
         resp.getWriter().write(jsonMapper.writeValueAsString(foundUser));
 
+        // Get updated info
+        try {
+            ResourceCreationResponse responseBody = userService
+                    .updateUser(jsonMapper.readValue(req.getInputStream(), UpdateUserRequest.class), idToSearchFor);
+            resp.getWriter().write(jsonMapper.writeValueAsString(responseBody));
+        } catch (InvalidRequestException | JsonMappingException e) {
+            resp.setStatus(400);// * bad request
+            resp.getWriter().write(jsonMapper.writeValueAsString(new ErrorResponse(400, e.getMessage())));
+        } catch (AuthenticationException e) {
+            resp.setStatus(409); // * conflit; indicate that provided resource could not be saved
+            resp.getWriter().write(jsonMapper.writeValueAsString(new ErrorResponse(409, e.getMessage())));
+        } catch (DataSourceException e) {
+            resp.setStatus(500); // * internal error
+            resp.getWriter().write(jsonMapper.writeValueAsString(new ErrorResponse(500, e.getMessage())));
+        }
+        resp.getWriter().write("\nEmail is: "+ requester.getEmail());
     }
 }

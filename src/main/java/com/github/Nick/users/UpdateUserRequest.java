@@ -59,7 +59,7 @@ public class UpdateUserRequest implements Request<User> {
     }
 
 
-    public boolean isIs_active() {
+    public boolean getIs_active() {
         return is_active;
     }
 
@@ -82,6 +82,7 @@ public class UpdateUserRequest implements Request<User> {
     public User extractEntity() {
         // TODO
         User extractedEntity = new User();
+        
         extractedEntity.setEmail(this.email);
         extractedEntity.setGiven_name(this.given_name);
         extractedEntity.setSurname(this.surname);
