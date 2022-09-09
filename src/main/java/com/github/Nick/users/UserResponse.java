@@ -1,6 +1,7 @@
 package com.github.Nick.users;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 //* Response DTO
 public class UserResponse implements Serializable{
@@ -81,8 +82,24 @@ public class UserResponse implements Serializable{
     }
 
     @Override
+    public int hashCode() {
+        return Objects.hash(user_id, username, email, given_name, surname, is_active, role);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        UserResponse userResponse = (UserResponse) obj;
+        return Objects.equals(user_id, userResponse.user_id) && Objects.equals(username, userResponse.username)
+            && Objects.equals(email, userResponse.email) && Objects.equals(given_name, userResponse.given_name)
+            && Objects.equals(surname, userResponse.surname) && Objects.equals(is_active, userResponse.is_active)
+            && Objects.equals(role, userResponse.role);
+    }
+
+    @Override
     public String toString() {
-        return  "User " + "{" +
+        return  "UserResponse {" +
                 "user_id = '" + user_id +  "' " +
                 "username = '" + username + "' " +
                 "email = '" + email + "' " +
@@ -90,6 +107,6 @@ public class UserResponse implements Serializable{
                 "surname = '" + surname + "' " +
                 "is_active = '" + is_active + "' " +
                 "role = '" + role + "' " +
-                "'}";
+                "}";
     }
 }

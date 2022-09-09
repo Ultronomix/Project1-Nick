@@ -17,6 +17,21 @@ public class User {
     private boolean is_active;
     private String role;
 
+    public User() {
+        super();
+    }
+
+    public User(String user_id, String username, String email, String password, String given_name, String surname,
+            boolean is_active) {
+        this.user_id = user_id;
+        this.username = username;
+        this.email = email;
+        this.password = password;
+        this.given_name = given_name;
+        this.surname = surname;
+        this.is_active = is_active;
+    }
+
     public void setUser_id (String user_id) {
         this.user_id = user_id;
     }

@@ -33,6 +33,7 @@ public class UserServlet extends HttpServlet {
         ObjectMapper jsonMapper = new ObjectMapper();
         resp.setContentType("application/json");
 
+        // Access the HTTP session on the request
         HttpSession userSession = req.getSession(false);
 
         // if null, this mean that the requester is not authenticated with server

@@ -33,8 +33,12 @@ public class AuthServlet extends HttpServlet {
             Credentials credentials = jsonMapper.readValue(req.getInputStream(),Credentials.class);
             UserResponse responseBody = authService.authenticate(credentials);
             resp.setStatus(200); //* Ok general success
+
+            // Establish on HTTP session that is implicitly attached to the response as a cookie
+            // The web client will automatically attach this cookie to requests to the server
             HttpSession userSession = req.getSession();
             userSession.setAttribute("authUser", responseBody);
+
             resp.getWriter().write((jsonMapper.writeValueAsString(responseBody)));
             //TODO json exception response message
         } catch (InvalidRequestException | JsonMappingException e) {
@@ -47,6 +51,10 @@ public class AuthServlet extends HttpServlet {
             resp.setStatus(500); //* Internal error
             resp.getWriter().write(jsonMapper.writeValueAsString(new ErrorResponse(500, e.getMessage())));
         }
-        //! resp.getWriter().write(jsonMapper.writeValueAsString(loggedIn));
+    }
+
+    @Override
+    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        req.getSession().invalidate(); // logs out the user
     }
 }
