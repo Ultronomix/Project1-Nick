@@ -100,6 +100,7 @@ public class UserService {
     //? Update user's active status
     public ResourceCreationResponse updateUser (UpdateUserRequest updateUser, String idToSearchFor) {
 
+        // check which info to update
         if (updateUser == null) {
             throw new InvalidRequestException("Provided request payload was null.");
         }
@@ -108,21 +109,23 @@ public class UserService {
             // throw new InvalidRequestException("Email cannot be empty");
         }
         if (updateUser.getGiven_name() != null && updateUser.getGiven_name().trim().length() > 4) {
-            // updateUserGivenName(updateUser.getGiven_Name)
+            // userDAO.updateUserGivenName(updateUser.getGiven_Name(), idToSearchFor);
             // throw new InvalidRequestException("A empty given name or surname");
         }
         if (updateUser.getSurname() != null && updateUser.getSurname().trim().length() > 4) {
-            // updateUserSurname(updateUser.getSurname)
+            // userDAO.updateUserSurname(updateUser.getSurname(), idToSearchFor);
             // throw new InvalidRequestException("A empty given name or surname");
         }
         if (updateUser.getIs_active() == false || updateUser.getIs_active() == true) {
-            // updateUserIsActive(updateUser.getIs_active)
+            // userDAO.updateUserIsActive(updateUser.getIs_active(), idToSearchFor)
             // throw new InvalidRequestException("A empty given name or surname");
         }
 
         String userToUpdate = updateUser.extractEntity().getEmail();
+        //! delete
         System.out.println(userToUpdate);
         String updateEmail = userDAO.updateUserEmail(userToUpdate, idToSearchFor);
+        //! delete
         System.out.println("update: " + updateEmail);
         // TODO create DAO
         // String updatedUser = userDAO.update(userToUpdate);

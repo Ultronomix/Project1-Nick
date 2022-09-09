@@ -195,28 +195,27 @@ public class UserDAO {
 
     public String updateUserEmail (String email, String user_id) {
 
-        String sql = "UPDATE ers_users SET email = ? WHERE user_id = '2'";
+        String sql = "UPDATE ers_users SET email = ? WHERE user_id = ";
 
         try (Connection conn = ConnectionFactory.getInstance().getConnection()) {
 
             PreparedStatement pstmt = conn.prepareStatement(sql);
-            System.out.println(email);
+            System.out.println(email); //! delete
             pstmt.setString(1, email);
-            System.out.println(user_id);
-            // pstmt.setString(2, "2");
+            System.out.println(user_id); //! delete
+            pstmt.setString(2, user_id);
             // ResultSet rs = 
             System.out.println("pstmt: " + pstmt);
             pstmt.executeUpdate();
-            // pstmt.executeQuery();
-            System.out.println("4");
-            return "email added";
-            // mapResultSet(rs).stream().findFirst();
+            // pstmt.executeQuery(); //! delete
+            System.out.println("4"); //! delete
+            return "email added"; //TODO change
+            // mapResultSet(rs).stream().findFirst(); // delete or reconfig
 
         } catch (SQLException e) {
             //TODO log exception
             throw new DataSourceException(e);
         }
-        // return "Update Email check";
     }
 
     private List<User> mapResultSet(ResultSet rs) throws SQLException {
