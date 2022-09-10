@@ -82,7 +82,6 @@ public class UpdateUserRequest implements Request<User> {
     public User extractEntity() {
         // TODO
         User extractedEntity = new User();
-        
         extractedEntity.setEmail(this.email);
         extractedEntity.setGiven_name(this.given_name);
         extractedEntity.setSurname(this.surname);

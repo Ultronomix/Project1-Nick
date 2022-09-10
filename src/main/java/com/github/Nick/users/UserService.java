@@ -122,11 +122,9 @@ public class UserService {
         }
 
         String userToUpdate = updateUser.extractEntity().getEmail();
-        //! delete
-        System.out.println(userToUpdate);
+        System.out.println(userToUpdate); //! delete
         String updateEmail = userDAO.updateUserEmail(userToUpdate, idToSearchFor);
-        //! delete
-        System.out.println("update: " + updateEmail);
+        System.out.println("update: " + updateEmail); //! delete
         // TODO create DAO
         // String updatedUser = userDAO.update(userToUpdate);
         return new ResourceCreationResponse(updateEmail);
