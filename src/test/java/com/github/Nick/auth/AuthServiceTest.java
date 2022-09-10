@@ -44,18 +44,21 @@ public class AuthServiceTest {
         User userStub = new User("some-id", "val", "valid123@gmail.com", "credentials", "Valid", "test", true);
         when(mockUserDAO.findUserByUsernameAndPassword(anyString(), anyString())).thenReturn(Optional.of(userStub));
         UserResponse expectedResult = new UserResponse(userStub);
+
         //* Act
         UserResponse actualResult = sut.authenticate(credentialsStub);
+
         //* Assert
         assertNotNull(actualResult);
         assertEquals(expectedResult, actualResult); //* Objects being compared needs to have a .equals method
     }
 
     @Test
-    public void test_authentication_throwsInvalidRequestException_givenInvalidCredentials() {
+    public void test_authentication_throwsInvalidRequestException_givenTooShortPassword() {
 
         //* Arrange
         Credentials credentialsStub = new Credentials("invalid", "cred");
+        
         //* Act & Assert
         assertThrows(InvalidRequestException.class, () -> {
             sut.authenticate(credentialsStub);
@@ -65,15 +68,47 @@ public class AuthServiceTest {
     }
 
     @Test
-    public void test_authentication_throwsAuthenticationException_givenInvalidCredentials() {
+    public void test_authentication_throwsAuthenticationException_givenTooShortUsername() {
         
         //* Arrange
-        Credentials credentialsStub = new Credentials("invalid", "credential");
+        Credentials credentialsStub = new Credentials("x", "credential");
         //* Act & Assert
-        assertThrows(AuthenticationException.class, () ->{
+        assertThrows(InvalidRequestException.class, () ->{
             sut.authenticate(credentialsStub);
         });
 
-        verify(mockUserDAO, times(1)).findUserByUsernameAndPassword(anyString(), anyString());
+        verify(mockUserDAO, times(0)).findUserByUsernameAndPassword(anyString(), anyString());
     }
+
+    @Test
+    public void test_authentication_throwsInvalidRequestException_givenNullCredential () {
+        // Arrange
+        Credentials credentialsStub = null;
+
+        //act
+        assertThrows(InvalidRequestException.class, () -> {
+            sut.authenticate(credentialsStub);
+        });
+
+        // Assert
+        verify(mockUserDAO, times(0)).findUserByUsernameAndPassword(anyString(), anyString());
+    }
+
+    @Test
+    public void test_authenticate_throwsAuthenticationException_givenValidUnknownCredentials() {
+
+        // Arrange
+        Credentials credentialsStub = new Credentials("unknown", "credentials");
+        when(mockUserDAO.findUserByUsernameAndPassword(anyString(), anyString())).thenReturn(Optional.empty());
+
+        // Act
+        assertThrows(AuthenticationException.class, () -> {
+            sut.authenticate(credentialsStub);
+        });
+
+        // Assert
+        verify(mockUserDAO, times(1)).findUserByUsernameAndPassword(anyString(), anyString());
+
+    }
+
 }
