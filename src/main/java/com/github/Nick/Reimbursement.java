@@ -2,6 +2,8 @@ package com.github.Nick;
 
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.startup.Tomcat;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.github.Nick.auth.AuthService;
 import com.github.Nick.auth.AuthServlet;
@@ -11,11 +13,15 @@ import com.github.Nick.users.UserService;
 import com.github.Nick.users.UserServlet;
 
 public class Reimbursement {
+
+    private static Logger logger = LogManager.getLogger(Reimbursement.class);
     public static void main(String[] args) throws LifecycleException {
 
         //! System.out.println("Start");
         //! DateTimeFormatter format = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
         //! System.out.println(LocalDateTime.now().format(format));
+
+        logger.info("Starting Reimbursement app");
 
         String docBase = System.getProperty("java.io.tmpdir");
 
@@ -42,7 +48,10 @@ public class Reimbursement {
         
         //* starting and awaiting web request
         webServer.start();
+
+        logger.info("Reimbursement started");
+
         webServer.getServer().await();
-        System.out.print("Web application started.");
+        //! System.out.print("Web application started.");
     }
 }

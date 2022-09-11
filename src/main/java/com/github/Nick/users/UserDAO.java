@@ -238,7 +238,7 @@ public class UserDAO {
     //TODO Move log
     public void log(String level, String message) {
         try {
-            File logFile = new File("src/main/resources/app.log");
+            File logFile = new File("logs/app.log");
             logFile.createNewFile();
             BufferedWriter logWriter = new BufferedWriter(new FileWriter(logFile, true));
             logWriter.write(String.format("\n[%s] at %s logged [%s] %s", Thread.currentThread().getName(), LocalDate.now(), level.toUpperCase(), message));

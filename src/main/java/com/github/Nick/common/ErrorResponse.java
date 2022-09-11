@@ -10,7 +10,7 @@ public class ErrorResponse {
     private String timestamp;
 
     DateTimeFormatter format = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
-    //System.out.println(LocalDateTime.now().format(format));
+    //! System.out.println(LocalDateTime.now().format(format));
 
     public ErrorResponse(int statusCode, String message) {
         this.statusCode = statusCode;
