@@ -7,10 +7,13 @@ import java.io.FileWriter;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import com.github.Nick.common.datasource.ConnectionFactory;
+import com.github.Nick.common.exceptions.AuthenticationException;
 import com.github.Nick.common.exceptions.DataSourceException;
+import com.github.Nick.common.exceptions.InvalidRequestException;
 
 //* DAO = Data Access Object 
 public class UserDAO {
@@ -160,6 +163,22 @@ public class UserDAO {
         } catch (SQLException e) {
             //TODO log exception
             throw new DataSourceException(e);
+        }
+    }
+
+    // Check if user is active
+    public boolean isActive (String username, String password) {
+        try{
+            Optional<User> user = findUserByUsernameAndPassword(username, password);
+
+            if(user.get().getIs_active()) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (NoSuchElementException e) {
+            // TODO create exception and change
+            throw new InvalidRequestException();
         }
     }
 

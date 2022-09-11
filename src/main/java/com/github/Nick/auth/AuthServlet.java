@@ -55,7 +55,7 @@ public class AuthServlet extends HttpServlet {
 
             logger.info("Post request successfully processed at {}", LocalDateTime.now().format(format));
 
-            //TODO json exception response message
+        //* json exception response message
         } catch (InvalidRequestException | JsonMappingException e) {
             logger.warn("Error processing request at {}, error message {}", LocalDateTime.now().format(format), e.getMessage());
             resp.setStatus(400);//* Bad request
@@ -68,6 +68,8 @@ public class AuthServlet extends HttpServlet {
             logger.warn("A data source error occures at {}, error message {}", LocalDateTime.now().format(format), e.getMessage());
             resp.setStatus(500); //* Internal error
             resp.getWriter().write(jsonMapper.writeValueAsString(new ErrorResponse(500, e.getMessage())));
+        } catch (RuntimeException e) { // TODO edit inavtive user reponse
+            resp.getWriter().write(jsonMapper.writeValueAsString("User inactive"));
         }
     }
 

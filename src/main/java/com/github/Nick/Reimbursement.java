@@ -21,6 +21,21 @@ public class Reimbursement {
         //! DateTimeFormatter format = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
         //! System.out.println(LocalDateTime.now().format(format));
 
+        // String name ="Nick";
+        // String pass= "Gotham";
+        // UserResponse user = userDAO.findUserByUsernameAndPassword(, credentials.getPassword())
+        //         .map(UserResponse :: new).orElseThrow(AuthenticationException::new);
+        // UserDAO userDAO = new UserDAO();
+        // boolean active = userDAO.isActive(name, pass);
+
+        // if(active == true) {
+        //     System.out.println("active");
+            // return userDAO.findUserByUsernameAndPassword(credentials.getUsername(), credentials.getPassword())
+            //     .map(UserResponse :: new).orElseThrow(AuthenticationException::new);
+        // } else {
+        //     throw new RuntimeException("User is inactive");
+        // }
+
         logger.info("Starting Reimbursement app");
 
         String docBase = System.getProperty("java.io.tmpdir");
