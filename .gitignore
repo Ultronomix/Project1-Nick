@@ -1,5 +1,5 @@
 .vscode/
 target/
 application.properties
-*.log
+logs/
 tomcat.5000
