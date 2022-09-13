@@ -14,6 +14,7 @@ import com.github.Nick.common.datasource.ConnectionFactory;
 import com.github.Nick.common.exceptions.AuthenticationException;
 import com.github.Nick.common.exceptions.DataSourceException;
 import com.github.Nick.common.exceptions.InvalidRequestException;
+import com.github.Nick.common.exceptions.ResourceNotFoundException;
 
 //* DAO = Data Access Object 
 public class UserDAO {
@@ -178,7 +179,7 @@ public class UserDAO {
             }
         } catch (NoSuchElementException e) {
             // TODO create exception and change
-            throw new InvalidRequestException();
+            throw new ResourceNotFoundException();
         }
     }
 

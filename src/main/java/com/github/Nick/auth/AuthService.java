@@ -30,15 +30,15 @@ public class AuthService {
 
         UserResponse user = userDAO.findUserByUsernameAndPassword(credentials.getUsername(), credentials.getPassword())
                 .map(UserResponse :: new).orElseThrow(AuthenticationException::new);
-        try{
+        try {
             boolean active = userDAO.isActive(credentials.getUsername(), credentials.getPassword());
             
             if(active == true) {
                 return user;
-                // return userDAO.findUserByUsernameAndPassword(credentials.getUsername(), credentials.getPassword())
-                //     .map(UserResponse :: new).orElseThrow(AuthenticationException::new);
+                //! return userDAO.findUserByUsernameAndPassword(credentials.getUsername(), credentials.getPassword())
+                //!     .map(UserResponse :: new).orElseThrow(AuthenticationException::new);
             } else {
-                throw new RuntimeException("User is inactive");
+                throw new InvalidRequestException("User is inactive");
             }
 
         } catch (NoSuchElementException e) {
