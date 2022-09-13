@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import com.github.Nick.common.exceptions.AuthenticationException;
 import com.github.Nick.common.exceptions.InvalidRequestException;
+import com.github.Nick.common.exceptions.ResourceNotFoundException;
 import com.github.Nick.users.User;
 import com.github.Nick.users.UserDAO;
 import com.github.Nick.users.UserResponse;
@@ -25,23 +26,24 @@ public class AuthService {
             throw new InvalidRequestException("The provided credentials are invalid");
         }
 
-        //TODO clean up in active check
-        // Optional<User> user = userDAO.findUserByUsernameAndPassword(credentials.getUsername(), credentials.getPassword());
-
-        UserResponse user = userDAO.findUserByUsernameAndPassword(credentials.getUsername(), credentials.getPassword())
-                .map(UserResponse :: new).orElseThrow(AuthenticationException::new);
+        //TODO clean up in active check        
+        
         try {
             boolean active = userDAO.isActive(credentials.getUsername(), credentials.getPassword());
             
+            UserResponse user = userDAO.findUserByUsernameAndPassword(credentials.getUsername(), credentials.getPassword())
+                .map(UserResponse :: new).orElseThrow(AuthenticationException::new);
+                
+            
             if(active == true) {
                 return user;
-                //! return userDAO.findUserByUsernameAndPassword(credentials.getUsername(), credentials.getPassword())
-                //!     .map(UserResponse :: new).orElseThrow(AuthenticationException::new);
+                //  return userDAO.findUserByUsernameAndPassword(credentials.getUsername(), credentials.getPassword())
+                //      .map(UserResponse :: new).orElseThrow(AuthenticationException::new);
             } else {
                 throw new InvalidRequestException("User is inactive");
             }
 
-        } catch (NoSuchElementException e) {
+        } catch (ResourceNotFoundException e) {
             throw new AuthenticationException();
         }
         

@@ -8,6 +8,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import org.junit.jupiter.api.AfterEach;
@@ -16,7 +17,9 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.github.Nick.common.exceptions.AuthenticationException;
+import com.github.Nick.common.exceptions.DataSourceException;
 import com.github.Nick.common.exceptions.InvalidRequestException;
+import com.github.Nick.common.exceptions.ResourceNotFoundException;
 import com.github.Nick.users.User;
 import com.github.Nick.users.UserDAO;
 import com.github.Nick.users.UserResponse;
@@ -36,7 +39,7 @@ public class AuthServiceTest {
         Mockito.reset(mockUserDAO);
     }
 
-    //@Test
+    @Test
     public void test_authenticationReturnsSuccessfully_givenValidAndKnownCredentials () {
 
         //* Arrange
@@ -54,7 +57,7 @@ public class AuthServiceTest {
         assertEquals(expectedResult, actualResult); //* Objects being compared needs to have a .equals method
     }
 
-    //@Test
+    @Test
     public void test_authentication_throwsInvalidRequestException_givenTooShortPassword() {
 
         //* Arrange
@@ -68,7 +71,7 @@ public class AuthServiceTest {
         verify(mockUserDAO, times(0)).findUserByUsernameAndPassword(anyString(), anyString());
     }
 
-    //@Test
+    @Test
     public void test_authentication_throwsAuthenticationException_givenTooShortUsername() {
         
         //* Arrange
@@ -81,7 +84,7 @@ public class AuthServiceTest {
         verify(mockUserDAO, times(0)).findUserByUsernameAndPassword(anyString(), anyString());
     }
 
-    //@Test
+    @Test
     public void test_authentication_throwsInvalidRequestException_givenNullCredential () {
         // Arrange
         Credentials credentialsStub = null;
@@ -95,7 +98,7 @@ public class AuthServiceTest {
         verify(mockUserDAO, times(0)).findUserByUsernameAndPassword(anyString(), anyString());
     }
 
-    //@Test
+    @Test
     public void test_authenticate_throwsAuthenticationException_givenValidUnknownCredentials() {
 
         // Arrange
@@ -112,4 +115,36 @@ public class AuthServiceTest {
 
     }
 
+    @Test
+    public void test_authentication_throwsInvalidRequestException_givenInActiveUser () {
+
+        Credentials credentialsStub = new Credentials("valid", "credentials");
+        User userStub = new User("some-id", "valid", "valid123@gmail.com", "credentials", "Valid", "test", false);
+        when(mockUserDAO.findUserByUsernameAndPassword(anyString(), anyString())).thenReturn(Optional.of(userStub));
+        when(mockUserDAO.isActive(anyString(), anyString())).thenReturn(false);
+
+        assertThrows(InvalidRequestException.class, () -> { 
+            sut.authenticate(credentialsStub);
+        });
+
+        verify(mockUserDAO, times(1)).isActive("valid", "credentials");
+    }
+
+    @Test
+    public void test_authenticate_throwsAuthenticationException_givenValidUnknownCredentialsToIsActive () {
+
+        Credentials credentialsStub = new Credentials("unknown", "credential");
+        when(mockUserDAO.findUserByUsernameAndPassword(anyString(), anyString())).thenThrow(ResourceNotFoundException.class);
+        // User userStub = new User("some-id", "valid", "valid123@gmail.com", "credentials", "Valid", "test", true);
+        // when(mockUserDAO.findUserByUsernameAndPassword(anyString(), anyString())).thenReturn(Optional.of(userStub));
+        // when(mockUserDAO.isActive(anyString(), anyString())).thenReturn(true);
+
+        assertThrows(AuthenticationException.class, () -> { 
+            sut.authenticate(credentialsStub);
+        });
+
+        //UserResponse actualResponse = sut.authenticate(credentialsStub);
+
+        verify(mockUserDAO, times(1)).isActive(anyString(), anyString());
+    }
 }
