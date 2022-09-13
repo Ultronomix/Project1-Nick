@@ -8,7 +8,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import org.junit.jupiter.api.AfterEach;
@@ -17,7 +16,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.github.Nick.common.exceptions.AuthenticationException;
-import com.github.Nick.common.exceptions.DataSourceException;
 import com.github.Nick.common.exceptions.InvalidRequestException;
 import com.github.Nick.common.exceptions.ResourceNotFoundException;
 import com.github.Nick.users.User;
@@ -135,15 +133,10 @@ public class AuthServiceTest {
 
         Credentials credentialsStub = new Credentials("unknown", "credential");
         when(mockUserDAO.findUserByUsernameAndPassword(anyString(), anyString())).thenThrow(ResourceNotFoundException.class);
-        // User userStub = new User("some-id", "valid", "valid123@gmail.com", "credentials", "Valid", "test", true);
-        // when(mockUserDAO.findUserByUsernameAndPassword(anyString(), anyString())).thenReturn(Optional.of(userStub));
-        // when(mockUserDAO.isActive(anyString(), anyString())).thenReturn(true);
-
+        
         assertThrows(AuthenticationException.class, () -> { 
             sut.authenticate(credentialsStub);
         });
-
-        //UserResponse actualResponse = sut.authenticate(credentialsStub);
 
         verify(mockUserDAO, times(1)).isActive(anyString(), anyString());
     }
