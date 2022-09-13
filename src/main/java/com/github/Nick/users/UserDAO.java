@@ -11,9 +11,7 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import com.github.Nick.common.datasource.ConnectionFactory;
-import com.github.Nick.common.exceptions.AuthenticationException;
 import com.github.Nick.common.exceptions.DataSourceException;
-import com.github.Nick.common.exceptions.InvalidRequestException;
 import com.github.Nick.common.exceptions.ResourceNotFoundException;
 
 //* DAO = Data Access Object 
@@ -220,16 +218,16 @@ public class UserDAO {
         try (Connection conn = ConnectionFactory.getInstance().getConnection()) {
 
             PreparedStatement pstmt = conn.prepareStatement(sql);
-            System.out.println(email); //! delete
+            //! System.out.println(email); //! delete
             pstmt.setString(1, email);
-            System.out.println(user_id); //! delete
+            //! System.out.println(user_id); //! delete
             pstmt.setString(2, user_id);
             // ResultSet rs = 
-            System.out.println("pstmt: " + pstmt);
+            //! System.out.println("pstmt: " + pstmt);
             pstmt.executeUpdate();
             // pstmt.executeQuery(); //! delete
-            System.out.println("4"); //! delete
-            return "email added"; //TODO change
+            //! System.out.println("4"); //! delete
+            return "Email Changed"; //TODO change
             // mapResultSet(rs).stream().findFirst(); // delete or reconfig
 
         } catch (SQLException e) {
