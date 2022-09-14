@@ -5,6 +5,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -103,6 +106,32 @@ public class ReimbDAO {
             // TODO add log
             throw new DataSourceException(e);
         }
+    }
+
+    public String updateRequestStatus (String status, String reimb_id, String resolver_id) {
+
+        //TODO add log
+        String updateSql = "UPDATE ers_reimbursements SET status = ?, resolved = ?, resolver_id = ? WHERE reimb_id = ?";
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+
+        try (Connection conn = ConnectionFactory.getInstance().getConnection()) {
+
+            PreparedStatement pstmt = conn.prepareStatement(updateSql);
+            pstmt.setString(1, status);
+            pstmt.setString(2, LocalDateTime.now().format(format));
+            pstmt.setString(3, resolver_id);
+            pstmt.setString(4, reimb_id);
+
+            // ResultSet rs =
+            pstmt.executeUpdate();
+            
+            return "Updated status";
+            //TODO add log
+        } catch (SQLException e) {
+            // TODO add log
+            throw new DataSourceException(e);
+        }
+
     }
 
     private List<Reimb> mapResultSet(ResultSet rs) throws SQLException {

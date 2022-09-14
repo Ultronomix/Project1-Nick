@@ -90,6 +90,15 @@ public class ReimbService {
     }
 
     public ResourceCreationResponse updateReimb (UpdateReimbRequest updateReimb, String idToSearchFor) {
+
+        // TODO add log
+        if (updateReimb == null) {
+            // TODO add log
+            throw new InvalidRequestException("Provide request payload");
+        }
+
+        String reimbToUpdate = updateReimb.extractEntity().getStatus();
+        // TODO create update method
         return null;
     }
 
