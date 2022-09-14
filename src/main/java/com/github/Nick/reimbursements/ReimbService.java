@@ -3,6 +3,7 @@ package com.github.Nick.reimbursements;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.github.Nick.common.ResourceCreationResponse;
 import com.github.Nick.common.exceptions.InvalidRequestException;
 import com.github.Nick.common.exceptions.ResourceNotFoundException;
 
@@ -86,6 +87,10 @@ public class ReimbService {
 
         return result;
         // TODO add log
+    }
+
+    public ResourceCreationResponse updateReimb (UpdateReimbRequest updateReimb, String idToSearchFor) {
+        return null;
     }
 
 }

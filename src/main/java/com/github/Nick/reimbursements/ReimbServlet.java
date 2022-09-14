@@ -12,6 +12,8 @@ import javax.servlet.http.HttpSession;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.Nick.common.ErrorResponse;
+import com.github.Nick.common.ResourceCreationResponse;
+import com.github.Nick.common.exceptions.AuthenticationException;
 import com.github.Nick.common.exceptions.DataSourceException;
 import com.github.Nick.common.exceptions.InvalidRequestException;
 import com.github.Nick.common.exceptions.ResourceNotFoundException;
@@ -137,11 +139,31 @@ public class ReimbServlet extends HttpServlet {
         if ((!requester.getRole().equals("CEO") && !requester.getRole().equals("FINANCE MANGER")) 
           && !requester.getUser_id().equals(idToSearchFor)) {
             // TODO log
-            resp.getWriter().write("test put constraint");
+            resp.setStatus(403); // Forbidden
+            resp.getWriter().write(jsonMapper.writeValueAsString(new ErrorResponse(403, "Requester not permitted to communicate with this endpoint.")));
+            return;
           }
 
+          ReimbResponse foundReimb = reimbService.getReimbById(idToSearchFor);
+          resp.getWriter().write(jsonMapper.writeValueAsString(foundReimb));
 
-
-        resp.getWriter().write("Put to /reimb work");
+        try {
+            ResourceCreationResponse responseBody = 
+                reimbService.updateReimb(jsonMapper.readValue(req.getInputStream(), UpdateReimbRequest.class), idToSearchFor);
+        } catch (InvalidRequestException | JsonMappingException e) {
+            // TODO add log
+            resp.setStatus(400);
+            resp.getWriter().write(jsonMapper.writeValueAsString(new ErrorResponse(400, e.getMessage())));
+        } catch (AuthenticationException e) {
+            // TODO add log
+            resp.setStatus(409);
+            resp.getWriter().write(jsonMapper.writeValueAsString(new ErrorResponse(409, e.getMessage())));
+        } catch (DataSourceException e) {
+            // TODO add log
+            resp.setStatus(500);
+            resp.getWriter().write(jsonMapper.writeValueAsString(new ErrorResponse(500, e.getMessage())));
+        }
+        
+        resp.getWriter().write("\nPut to /reimb end");
     }
 }
