@@ -43,6 +43,7 @@ public class ReimbDAO {
 
     public Optional<Reimb> getReimbById (String id) {
 
+        // TODO add log
         String sqlId = select + "WHERE er.author_id = ?";
 
         try (Connection conn = ConnectionFactory.getInstance().getConnection()) {
@@ -52,7 +53,7 @@ public class ReimbDAO {
             ResultSet rs = pstmt.executeQuery();
 
             return mapResultSet(rs).stream().findFirst();
-
+            // TODO add log
         } catch (SQLException e) {
             // TODO add log
             throw new DataSourceException(e);
@@ -61,7 +62,8 @@ public class ReimbDAO {
     }
 
     public List<Reimb> getReimbByStatus (String status) {
-
+        
+        // TODO add log
         String sqlStatus = select + "WHERE ers.status = ?";
         List<Reimb> reimbsStatus = new  ArrayList<>();
 
@@ -74,13 +76,34 @@ public class ReimbDAO {
             reimbsStatus = mapResultSet(rs);
 
             return reimbsStatus;
-
+            // TODO add log
         } catch (SQLException e) {
             // TODO add log
             throw new DataSourceException(e);
         }
     }
     
+    public List<Reimb> getReimbByType (String type) {
+
+        // TODO add log
+        String sqlType = select + "WHERE ert.type = ?";
+        List<Reimb> reimbsType = new ArrayList<>();
+
+        try (Connection conn = ConnectionFactory.getInstance().getConnection()) {
+            
+            PreparedStatement pstmt = conn.prepareStatement(sqlType);
+            pstmt.setString(1, type.toUpperCase());
+            ResultSet rs = pstmt.executeQuery();
+
+            reimbsType = mapResultSet(rs);
+
+            return reimbsType;
+            // TODO add log
+        } catch (Exception e) {
+            // TODO add log
+            throw new DataSourceException(e);
+        }
+    }
 
     private List<Reimb> mapResultSet(ResultSet rs) throws SQLException {
 

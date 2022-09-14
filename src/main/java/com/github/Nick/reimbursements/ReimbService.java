@@ -64,4 +64,28 @@ public class ReimbService {
         // TODO add log
     }
 
+    public List<ReimbResponse> getReimbByType (String type) {
+
+        // TODO add log
+        if (type == null || (!type.toUpperCase().trim().equals("LODGING") 
+                          && !type.toUpperCase().trim().equals("TRAVEL")
+                          && !type.toUpperCase().trim().equals("FOOD")
+                          && !type.toUpperCase().trim().equals("OTHER"))) {
+            // TODO add log
+            throw new InvalidRequestException("Type must be 'Lodging', 'Travel', " +
+                                              "'Food', or 'Other'");
+            
+        }
+
+        List<ReimbResponse> result = new ArrayList<>();
+        List<Reimb> reimbs = reimbDAO.getReimbByType(type);
+
+        for (Reimb reimb : reimbs) {
+            result.add(new ReimbResponse(reimb));
+        }
+
+        return result;
+        // TODO add log
+    }
+
 }

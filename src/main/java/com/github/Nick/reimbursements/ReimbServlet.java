@@ -58,19 +58,25 @@ public class ReimbServlet extends HttpServlet {
                 // TODO add log
                 List<ReimbResponse> allReimb = reimbService.getAllReimb();
                 resp.getWriter().write(jsonMapper.writeValueAsString(allReimb));
-                //! resp.getWriter().write("Get all reimburse request");
+                //! resp.getWriter().write("\nGet all reimburse request");
             }
             if (idToSearchFor != null) {
                 // TODO add log
                 ReimbResponse foundRequest = reimbService.getReimbById(idToSearchFor);
                 resp.getWriter().write(jsonMapper.writeValueAsString(foundRequest));
-                //! resp.getWriter().write("Get reimburse request by id");
+                //! resp.getWriter().write("\nGet reimburse request by id");
             }
             if (statusToSearchFor != null) {
                 // TODO add log
                 List<ReimbResponse> foundStatus = reimbService.getReimbByStatus(statusToSearchFor);
                 resp.getWriter().write(jsonMapper.writeValueAsString(foundStatus));
-                //! resp.getWriter().write("Get reimburse by status");
+                //! resp.getWriter().write("\nGet reimburse by status");
+            }
+            if (typeToSearchFor != null) {
+                // TODO add log
+                List<ReimbResponse> foundType = reimbService.getReimbByType(typeToSearchFor);
+                resp.getWriter().write(jsonMapper.writeValueAsString(foundType));
+                //! resp.getWriter().write("\nGet reimburse by type");
             }
         } catch (InvalidRequestException | JsonMappingException e) {
             // TODO add log
@@ -110,17 +116,31 @@ public class ReimbServlet extends HttpServlet {
     @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
+        // TODO add log
         ObjectMapper jsonMapper = new ObjectMapper();
         resp.setContentType("application/json");
 
         HttpSession reimbSession = req.getSession(false);
 
         if (reimbSession == null) {
+            // TODO add log
             resp.setStatus(401);
             resp.getWriter().write(jsonMapper
                     .writeValueAsString(new ErrorResponse(401, "Requestor not authenticated with server, log in")));
             return;
         }
+
+        UserResponse requester = (UserResponse) reimbSession.getAttribute("authUser");
+
+        String idToSearchFor= req.getParameter("id");
+
+        if ((!requester.getRole().equals("CEO") && !requester.getRole().equals("FINANCE MANGER")) 
+          && !requester.getUser_id().equals(idToSearchFor)) {
+            // TODO log
+            resp.getWriter().write("test put constraint");
+          }
+
+
 
         resp.getWriter().write("Put to /reimb work");
     }
