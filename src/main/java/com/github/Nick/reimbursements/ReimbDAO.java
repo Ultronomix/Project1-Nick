@@ -1,17 +1,25 @@
 package com.github.Nick.reimbursements;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import com.github.Nick.common.datasource.ConnectionFactory;
+import com.github.Nick.common.exceptions.DataSourceException;
 
 public class ReimbDAO {
 
-    private final String select = "SELECT * FROM ers_reimbursements";
+    private final String select = "SELECT er.reimb_id, er.amount, er.submitted, er.resolved, " +
+                                "er.description, er.payment_id, er.author_id, er.resolver_id, " +
+                                "ers.status, ert.type " +
+                                "FROM ers_reimbursements er " +
+                                "JOIN ers_reimbursement_statuses ers ON er.status_id = ers.status_id " +
+                                "JOIN ers_reimbursement_types ert ON er.type_id = ert.type_id ";
 
     public List<Reimb> getAllReimb () {
 
@@ -20,16 +28,57 @@ public class ReimbDAO {
         try (Connection conn = ConnectionFactory.getInstance().getConnection()) {
 
             Statement stmt = conn.createStatement();
-            ResultSet rs = ((java.sql.Statement) stmt).executeQuery(select);
+            ResultSet rs = stmt.executeQuery(select);
 
             allreimbs = mapResultSet(rs);
+            
+            return allreimbs;
 
         } catch (SQLException e) {
-            System.err.println("Something went wrong when connection to database.");
-            e.printStackTrace();
+            // TODO add log
+            throw new DataSourceException(e);
         }
 
-        return allreimbs;
+    }
+
+    public Optional<Reimb> getReimbById (String id) {
+
+        String sqlId = select + "WHERE er.author_id = ?";
+
+        try (Connection conn = ConnectionFactory.getInstance().getConnection()) {
+
+            PreparedStatement pstmt = conn.prepareStatement(sqlId);
+            pstmt.setString(1, id);
+            ResultSet rs = pstmt.executeQuery();
+
+            return mapResultSet(rs).stream().findFirst();
+
+        } catch (SQLException e) {
+            // TODO add log
+            throw new DataSourceException(e);
+        }
+
+    }
+
+    public List<Reimb> getReimbByStatus (String status) {
+
+        String sqlStatus = select + "WHERE ers.status = ?";
+        List<Reimb> reimbsStatus = new  ArrayList<>();
+
+        try (Connection conn = ConnectionFactory.getInstance().getConnection()) {
+            
+            PreparedStatement pstmt = conn.prepareStatement(sqlStatus);
+            pstmt.setString(1, status.toUpperCase());
+            ResultSet rs = pstmt.executeQuery();
+
+            reimbsStatus = mapResultSet(rs);
+
+            return reimbsStatus;
+
+        } catch (SQLException e) {
+            // TODO add log
+            throw new DataSourceException(e);
+        }
     }
     
 
@@ -45,10 +94,10 @@ public class ReimbDAO {
             reimb.setResolved(rs.getString("resolved"));
             reimb.setDescription(rs.getString("description"));
             reimb.setPayment_id(rs.getString("payment_id"));
-            reimb.setAuthor_id("author_id");
-            reimb.setResolver_id("resolver_id");
-            reimb.setStatus_id("status_id");
-            reimb.setType_id("type_id");
+            reimb.setAuthor_id(rs.getString("author_id"));
+            reimb.setResolver_id(rs.getString("resolver_id"));
+            reimb.setStatus(rs.getString("status"));
+            reimb.setType(rs.getString("type"));
             reimbs.add(reimb);
         }
 

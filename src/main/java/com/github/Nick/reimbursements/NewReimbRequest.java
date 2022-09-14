@@ -6,13 +6,13 @@ public class NewReimbRequest implements Request<Reimb> {
 
     private String reimb_id;
     private int amount;
-    private String submitted;
-    // private String resolved; //? set with resolver_id
+    private String submitted; //? Auto fill
+    // private String resolved; //? Blank set with resolver
     private String description;
     private String payment_id;
-    private String author_id; // ? links to user_id //? Get id from cookie
-    // private String resolver_id; // ? links to user_id 
-    private String type_id; // ? links to reimbursement type
+    private String author_id; //? links to user_id 
+    // private String resolver_id; //? Blank links to user_id 
+    private String type; //? links to reimbursement type
 
     public String getReimb_id() {
         return reimb_id;
@@ -62,12 +62,12 @@ public class NewReimbRequest implements Request<Reimb> {
         this.author_id = author_id;
     }
 
-    public String getType_id() {
-        return type_id;
+    public String getType() {
+        return type;
     }
 
-    public void setType_id(String type_id) {
-        this.type_id = type_id;
+    public void setType_id(String type) {
+        this.type = type;
     }
 
     
@@ -81,7 +81,7 @@ public class NewReimbRequest implements Request<Reimb> {
                 "description = '" + description + "' " +
                 "payment_id = '" + payment_id + "' " +
                 "author_id = '" + author_id + "' " +
-                "type_id = '" + type_id + "'}";
+                "type = '" + type + "'}";
     }
 
     @Override
@@ -93,7 +93,7 @@ public class NewReimbRequest implements Request<Reimb> {
         extractEntity.setDescription(this.description);
         extractEntity.setPayment_id(this.payment_id);
         extractEntity.setAuthor_id(this.author_id);
-        extractEntity.setType_id(this.type_id);
+        extractEntity.setType(this.type);
         return null;
     }
 }

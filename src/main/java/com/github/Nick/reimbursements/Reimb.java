@@ -12,8 +12,8 @@ public class Reimb {
     private String payment_id;
     private String author_id; // ? links to user_id
     private String resolver_id; // ? links to user_id
-    private String status_id; // ? links to reimbursement statuses
-    private String type_id; // ? links to reimbursement type
+    private String status; // ? links to reimbursement statuses
+    private String type; // ? links to reimbursement type
 
     public String getReimb_id() {
         return this.reimb_id;
@@ -79,20 +79,20 @@ public class Reimb {
         this.resolver_id = resolver_id;
     }
 
-    public String getStatus_id() {
-        return this.status_id;
+    public String getStatus() {
+        return this.status;
     }
 
-    public void setStatus_id(String status_id) {
-        this.status_id = status_id;
+    public void setStatus(String status) {
+        this.status = status;
     }
 
-    public String getType_id() {
-        return this.type_id;
+    public String getType() {
+        return this.type;
     }
 
-    public void setType_id(String type_id) {
-        this.type_id = type_id;
+    public void setType(String type) {
+        this.type = type;
     }
         
     @Override
@@ -104,13 +104,13 @@ public class Reimb {
             && Objects.equals(submitted, reimb.submitted) && Objects.equals(resolved, reimb.resolved)
             && Objects.equals(description, reimb.description) && Objects.equals(payment_id, reimb.payment_id)
             && Objects.equals(author_id, reimb.author_id) && Objects.equals(resolver_id, reimb.resolver_id)
-            && Objects.equals(status_id, reimb.status_id) && Objects.equals(type_id, reimb.type_id);
+            && Objects.equals(status, reimb.status) && Objects.equals(type, reimb.type);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(reimb_id, amount, submitted, resolved, description, payment_id, author_id,
-                            resolver_id, status_id, type_id);                   
+                            resolver_id, status, type);                   
     }
 
     @Override
@@ -124,7 +124,7 @@ public class Reimb {
                 "payment_id = '" + payment_id + "' " +
                 "author_id = '" + author_id + "' " +
                 "resolver_id = '" + resolver_id + "' " +
-                "status_id = '" + status_id + "' " +
-                "type_id = '" + type_id + "'}";
+                "status = '" + status + "' " +
+                "type = '" + type + "'}";
     }
 }

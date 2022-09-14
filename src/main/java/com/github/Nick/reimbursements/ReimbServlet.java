@@ -1,6 +1,7 @@
 package com.github.Nick.reimbursements;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -8,8 +9,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.Nick.common.ErrorResponse;
+import com.github.Nick.common.exceptions.DataSourceException;
+import com.github.Nick.common.exceptions.InvalidRequestException;
+import com.github.Nick.common.exceptions.ResourceNotFoundException;
 import com.github.Nick.users.UserResponse;
 
 public class ReimbServlet extends HttpServlet {
@@ -22,13 +27,14 @@ public class ReimbServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        
+        // TODO add log
         ObjectMapper jsonMapper = new ObjectMapper();
         resp.setContentType("application/json");
 
         HttpSession reimbSession = req.getSession(false);
 
         if (reimbSession == null) {
+            // TODO add log
             resp.setStatus(401);
             resp.getWriter().write(jsonMapper.writeValueAsString(new ErrorResponse(401, "Requestor not authenticated with server, log in")));
             return;
@@ -38,19 +44,54 @@ public class ReimbServlet extends HttpServlet {
 
         String idToSearchFor = req.getParameter("id");
         String statusToSearchFor = req.getParameter("status");
+        String typeToSearchFor = req.getParameter("type");
 
-        if ((!requester.getRole().equals("CEO") && !requester.getRole().equals("FINANCE MANAGER")) && !requester.getUser_id().equals(idToSearchFor) && !requester.getRole().equals(idToSearchFor)) {
+        if ((!requester.getRole().equals("CEO") && !requester.getRole().equals("FINANCE MANAGER")) && !requester.getUser_id().equals(idToSearchFor)) { // && !requester.getRole().equals(idToSearchFor)) {
+            // TODO add log
             resp.setStatus(403); // Forbidden
             resp.getWriter().write(jsonMapper.writeValueAsString(new ErrorResponse(403, "Requester not permitted to communicate with this endpoint.")));
             return;
         }
+        
+        try {
+            if (idToSearchFor == null && statusToSearchFor == null && typeToSearchFor == null) {
+                // TODO add log
+                List<ReimbResponse> allReimb = reimbService.getAllReimb();
+                resp.getWriter().write(jsonMapper.writeValueAsString(allReimb));
+                //! resp.getWriter().write("Get all reimburse request");
+            }
+            if (idToSearchFor != null) {
+                // TODO add log
+                ReimbResponse foundRequest = reimbService.getReimbById(idToSearchFor);
+                resp.getWriter().write(jsonMapper.writeValueAsString(foundRequest));
+                //! resp.getWriter().write("Get reimburse request by id");
+            }
+            if (statusToSearchFor != null) {
+                // TODO add log
+                List<ReimbResponse> foundStatus = reimbService.getReimbByStatus(statusToSearchFor);
+                resp.getWriter().write(jsonMapper.writeValueAsString(foundStatus));
+                //! resp.getWriter().write("Get reimburse by status");
+            }
+        } catch (InvalidRequestException | JsonMappingException e) {
+            // TODO add log
+            resp.setStatus(400);
+            resp.getWriter().write(jsonMapper.writeValueAsString(new ErrorResponse(400, e.getMessage())));
+        } catch (ResourceNotFoundException e) {
+            // TODO add log
+            resp.setStatus(404);
+            resp.getWriter().write(jsonMapper.writeValueAsString(new ErrorResponse(404, e.getMessage())));
+        } catch (DataSourceException e) {
+            // TODO add log
+            resp.setStatus(500);
+            resp.getWriter().write(jsonMapper.writeValueAsString(new ErrorResponse(500, e.getMessage())));
+        }
 
-        resp.getWriter().write("Get to /reimb work");
+        resp.getWriter().write("Reimb GET authorization end");
     }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        
+
         ObjectMapper jsonMapper = new ObjectMapper();
         resp.setContentType("application/json");
 
@@ -58,16 +99,17 @@ public class ReimbServlet extends HttpServlet {
 
         if (reimbSession == null) {
             resp.setStatus(401);
-            resp.getWriter().write(jsonMapper.writeValueAsString(new ErrorResponse(401, "Requestor not authenticated with server, log in")));
+            resp.getWriter().write(jsonMapper
+                    .writeValueAsString(new ErrorResponse(401, "Requestor not authenticated with server, log in")));
             return;
         }
 
         resp.getWriter().write("Post to /reimb work");
     }
-    
+
     @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        
+
         ObjectMapper jsonMapper = new ObjectMapper();
         resp.setContentType("application/json");
 
@@ -75,7 +117,8 @@ public class ReimbServlet extends HttpServlet {
 
         if (reimbSession == null) {
             resp.setStatus(401);
-            resp.getWriter().write(jsonMapper.writeValueAsString(new ErrorResponse(401, "Requestor not authenticated with server, log in")));
+            resp.getWriter().write(jsonMapper
+                    .writeValueAsString(new ErrorResponse(401, "Requestor not authenticated with server, log in")));
             return;
         }
 

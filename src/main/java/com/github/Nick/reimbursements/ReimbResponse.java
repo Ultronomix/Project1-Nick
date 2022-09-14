@@ -13,8 +13,8 @@ public class ReimbResponse implements Serializable{
     private String payment_id;
     private String author_id; // ? links to user_id
     private String resolver_id; // ? links to user_id
-    private String status_id; // ? links to reimbursement statuses
-    private String type_id; // ? links to reimbursement type
+    private String status; // ? links to reimbursement statuses
+    private String type; // ? links to reimbursement type
 
     public ReimbResponse (Reimb subject) {
         this.reimb_id = subject.getReimb_id();
@@ -25,8 +25,8 @@ public class ReimbResponse implements Serializable{
         this.payment_id = subject.getPayment_id();
         this.author_id = subject.getAuthor_id();
         this.resolver_id = subject.getResolver_id();
-        this.status_id = subject.getResolver_id();
-        this.type_id = subject.getType_id();
+        this.status = subject.getStatus();
+        this.type = subject.getType();
     }
 
     public String getReimb_id() {
@@ -93,20 +93,20 @@ public class ReimbResponse implements Serializable{
         this.resolver_id = resolver_id;
     }
 
-    public String getStatus_id() {
-        return status_id;
+    public String getStatus() {
+        return status;
     }
 
-    public void setStatus_id(String status_id) {
-        this.status_id = status_id;
+    public void setStatus(String status) {
+        this.status = status;
     }
 
-    public String getType_id() {
-        return type_id;
+    public String getType() {
+        return type;
     }
 
-    public void setType_id(String type_id) {
-        this.type_id = type_id;
+    public void setType(String type) {
+        this.type = type;
     }
 
     @Override
@@ -118,13 +118,13 @@ public class ReimbResponse implements Serializable{
             && Objects.equals(submitted, reimbResponse.submitted) && Objects.equals(resolved, reimbResponse.resolved)
             && Objects.equals(description, reimbResponse.description) && Objects.equals(payment_id, reimbResponse.payment_id)
             && Objects.equals(author_id, reimbResponse.author_id) && Objects.equals(resolver_id, reimbResponse.resolver_id)
-            && Objects.equals(status_id, reimbResponse.status_id) && Objects.equals(type_id, reimbResponse.type_id);
+            && Objects.equals(status, reimbResponse.status) && Objects.equals(type, reimbResponse.type);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(reimb_id, amount, submitted, resolved, description, payment_id, author_id,
-                            resolver_id, status_id, type_id);                   
+                            resolver_id, status, type);                   
     }
 
     @Override
@@ -138,7 +138,7 @@ public class ReimbResponse implements Serializable{
                 "payment_id = '" + payment_id + "' " +
                 "author_id = '" + author_id + "' " +
                 "resolver_id = '" + resolver_id + "' " +
-                "status_id = '" + status_id + "' " +
-                "type_id = '" + type_id + "'}";
+                "status = '" + status + "' " +
+                "type = '" + type + "'}";
     }
 }
