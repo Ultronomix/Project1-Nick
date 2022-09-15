@@ -112,6 +112,21 @@
         <configuration>
           <excludes>
             <exclude>com/github/Nick/auth/AuthServlet.*</exclude>
+            <exclude>com/github/Nick/auth/Credentials.*</exclude>
+            <exclude>com/github/Nick/common/*</exclude>
+            <exclude>com/github/Nick/reimbursements/NewReimbRequest.*</exclude>
+            <exclude>com/github/Nick/reimbursements/Reimb.*</exclude>
+            <exclude>com/github/Nick/reimbursements/ReimbDAO.*</exclude>
+            <exclude>com/github/Nick/reimbursements/ReimbResponse.*</exclude>
+            <exclude>com/github/Nick/reimbursementsReimbServlet.*</exclude>
+            <exclude>com/github/Nick/reimbursements/UpdateReimbRequest.*</exclude>
+            <exclude>com/github/Nick/users/NewRequest.*</exclude>
+            <exclude>com/github/Nick/users/UpdateUserRequest.*</exclude>
+            <exclude>com/github/Nick/users/User.*</exclude>
+            <exclude>com/github/Nick/users/UserDao.*</exclude>
+            <exclude>com/github/Nick/users/UserResponse.*</exclude>
+            <exclude>com/github/Nick/users/UserServlet.*</exclude>
+            <exclude>com/github/Nick/Reimbursement.*</exclude>
           </excludes>
         </configuration>
         <executions>
