@@ -6,15 +6,15 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import com.github.Nick.common.datasource.ConnectionFactory;
 import com.github.Nick.common.exceptions.DataSourceException;
+import com.github.Nick.common.exceptions.ResourceNotFoundException;
 
 public class ReimbDAO {
 
@@ -54,6 +54,26 @@ public class ReimbDAO {
 
             PreparedStatement pstmt = conn.prepareStatement(sqlId);
             pstmt.setString(1, id);
+            ResultSet rs = pstmt.executeQuery();
+
+            return mapResultSet(rs).stream().findFirst();
+            // TODO add log
+        } catch (SQLException e) {
+            // TODO add log
+            throw new DataSourceException(e);
+        }
+
+    }
+
+    public Optional<Reimb> getReimbByReimbId (String reimbid) {
+
+        // TODO add log
+        String sqlId = select + "WHERE er.reimb_id = ?";
+
+        try (Connection conn = ConnectionFactory.getInstance().getConnection()) {
+
+            PreparedStatement pstmt = conn.prepareStatement(sqlId);
+            pstmt.setString(1, reimbid);
             ResultSet rs = pstmt.executeQuery();
 
             return mapResultSet(rs).stream().findFirst();
@@ -113,32 +133,99 @@ public class ReimbDAO {
 
         //TODO add log
         String updateSql = "UPDATE ers_reimbursements SET status_id = ?, resolved = ?, resolver_id = ? WHERE reimb_id = ?";
-        DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-mm-dd hh:mm:ss");
 
         try (Connection conn = ConnectionFactory.getInstance().getConnection()) {
 
             PreparedStatement pstmt = conn.prepareStatement(updateSql);
-            System.out.println("test1");
             pstmt.setString(1, status);
-            System.out.println("test2");
             pstmt.setTimestamp(2, Timestamp.valueOf(LocalDateTime.now()));
-            System.out.println("test3");
             pstmt.setString(3, resolver_id);
-            System.out.println("test4");
             pstmt.setString(4, reimb_id);
-            System.out.println("test5");
             // ResultSet rs =
-            System.out.print(pstmt);
             pstmt.executeUpdate();
-            System.out.println("test6");
             return "Updated status";
             //TODO add log
         } catch (SQLException e) {
             // TODO add log
-            e.printStackTrace();
             throw new DataSourceException(e);
         }
 
+    }
+
+    public String updateUserAmount (String reimbId, double newAmount) {
+
+        // TODO add log
+        String updateAmountSql = "UPDATE ers_reimbursements SET amount = ? WHERE reimb_id = ?";
+
+        try (Connection conn = ConnectionFactory.getInstance().getConnection()) {
+
+            PreparedStatement pstmt = conn.prepareStatement(updateAmountSql);
+            pstmt.setDouble(1, newAmount);
+            pstmt.setString(2, reimbId);
+            
+            pstmt.executeUpdate();
+
+            return "Amount ";
+        } catch (SQLException e) {
+            // TODO add log
+            throw new DataSourceException(e);
+        }
+    }
+
+    public String updateUserDescription (String reimbId, String description) {
+
+        // TODO add log
+        String updateAmountSql = "UPDATE ers_reimbursements SET description = ? WHERE reimb_id = ?";
+
+        try (Connection conn = ConnectionFactory.getInstance().getConnection()) {
+
+            PreparedStatement pstmt = conn.prepareStatement(updateAmountSql);
+            pstmt.setString(1, description);
+            pstmt.setString(2, reimbId);
+            System.out.println(pstmt);
+            pstmt.executeUpdate();
+            
+            return "Description ";
+        } catch (SQLException e) {
+            // TODO add log
+            throw new DataSourceException(e);
+        }
+    }
+    
+    public String updateUserType (String reimbId, String type_id) {
+
+        // TODO add log
+        String updateAmountSql = "UPDATE ers_reimbursements SET type_id = ? WHERE reimb_id = ?";
+
+        try (Connection conn = ConnectionFactory.getInstance().getConnection()) {
+
+            PreparedStatement pstmt = conn.prepareStatement(updateAmountSql);
+            pstmt.setString(1, type_id);
+            pstmt.setString(2, reimbId);
+            System.out.println(pstmt);
+            pstmt.executeUpdate();
+            
+            return "Type ";
+        } catch (SQLException e) {
+            // TODO add log
+            throw new DataSourceException(e);
+        }
+    }
+
+    public boolean isPending (String reimbId) {
+
+        try {
+            Optional<Reimb> reimb = getReimbByReimbId(reimbId);
+
+            if (reimb.get().getStatus().equals("PENDING")) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (NoSuchElementException e) {
+            // TODO add log
+            throw new ResourceNotFoundException();
+        }
     }
 
     private List<Reimb> mapResultSet(ResultSet rs) throws SQLException {
@@ -148,7 +235,7 @@ public class ReimbDAO {
         while (rs.next()) {
             Reimb reimb = new Reimb();
             reimb.setReimb_id(rs.getString("reimb_id"));
-            reimb.setAmount(rs.getInt("amount"));
+            reimb.setAmount(rs.getDouble("amount"));
             reimb.setSubmitted(rs.getString("submitted"));
             reimb.setResolved(rs.getString("resolved"));
             reimb.setDescription(rs.getString("description"));

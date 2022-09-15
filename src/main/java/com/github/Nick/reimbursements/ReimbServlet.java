@@ -48,7 +48,7 @@ public class ReimbServlet extends HttpServlet {
         String statusToSearchFor = req.getParameter("status");
         String typeToSearchFor = req.getParameter("type");
 
-        if ((!requester.getRole().equals("CEO") && !requester.getRole().equals("FINANCE MANAGER")) && !requester.getUser_id().equals(idToSearchFor)) { // && !requester.getRole().equals(idToSearchFor)) {
+        if ((!requester.getRole().equals("CEO") && !requester.getRole().equals("FINANCE MANAGER")) && !requester.getUser_id().equals(idToSearchFor)) { 
             // TODO add log
             resp.setStatus(403); // Forbidden
             resp.getWriter().write(jsonMapper.writeValueAsString(new ErrorResponse(403, "Requester not permitted to communicate with this endpoint.")));
@@ -147,13 +147,21 @@ public class ReimbServlet extends HttpServlet {
     
         
         try {
-            ReimbResponse foundReimb = reimbService.getReimbById(idToSearchFor);
-            resp.getWriter().write(jsonMapper.writeValueAsString(foundReimb));
+
+            if (requester.getUser_id().equals(idToSearchFor)) {
+
+                // TODO add log
+                ResourceCreationResponse responseBody = 
+                    reimbService.updateUserReimb(jsonMapper.readValue(req.getInputStream(), UpdateReimbRequest.class), reimbIdToSearchFor);
+                resp.getWriter().write(jsonMapper.writeValueAsString(responseBody));
+
+                return;
+            }
 
             ResourceCreationResponse responseBody = 
                 reimbService.updateReimb(jsonMapper.readValue(req.getInputStream(), UpdateReimbRequest.class), reimbIdToSearchFor, requester.getUser_id());
             resp.getWriter().write(jsonMapper.writeValueAsString(responseBody));
-            
+
         } catch (InvalidRequestException | JsonMappingException e) {
             // TODO add log
             resp.setStatus(400);

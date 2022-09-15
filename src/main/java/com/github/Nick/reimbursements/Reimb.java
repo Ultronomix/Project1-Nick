@@ -5,7 +5,7 @@ import java.util.Objects;
 public class Reimb {
     
     private String reimb_id;
-    private int amount;
+    private double amount;
     private String submitted;
     private String resolved;
     private String description;
@@ -23,11 +23,11 @@ public class Reimb {
         this.reimb_id = reimb_id;
     }
 
-    public int getAmount() {
+    public double getAmount() {
         return this.amount;
     }
 
-    public void setAmount(int amount) {
+    public void setAmount(double amount) {
         this.amount = amount;
     }
 

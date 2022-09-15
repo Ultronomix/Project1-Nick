@@ -6,6 +6,7 @@ import java.util.List;
 import com.github.Nick.common.ResourceCreationResponse;
 import com.github.Nick.common.exceptions.InvalidRequestException;
 import com.github.Nick.common.exceptions.ResourceNotFoundException;
+import com.github.Nick.common.exceptions.ResourcePersistenceException;
 
 public class ReimbService {
 
@@ -110,4 +111,62 @@ public class ReimbService {
         return new ResourceCreationResponse(update);
     }
 
+    public ResourceCreationResponse updateUserReimb (UpdateReimbRequest updateReimb, String reimbId) {
+        
+        // TODO add logs
+        if (updateReimb == null) {
+            // TODO add log
+            throw new InvalidRequestException("Provide request payload");
+        }
+
+        if (!reimbDAO.isPending(reimbId)) {
+            // TODO add log
+            throw new ResourcePersistenceException("Request is not pending.");
+        }
+
+        double newAmount = updateReimb.extractEntity().getAmount();
+        String newDescription = updateReimb.extractEntity().getDescription();
+        String newType = updateReimb.extractEntity().getType();
+
+        System.out.println(newAmount);
+
+        if (newAmount > 0) {
+            if (newAmount > 9999.99) {
+                // TODO add log
+                throw new InvalidRequestException("Amount must be below 10,000.");
+            }
+
+            reimbDAO.updateUserAmount(reimbId, newAmount);
+
+        }
+        if (newDescription != null) {
+
+            reimbDAO.updateUserDescription(reimbId, newDescription);
+
+        }
+        if (newType != null) {
+            if (!newType.toUpperCase().equals("LODGING") && !newType.toUpperCase().equals("TRAVEL")
+                && !newType.toUpperCase().equals("FOOD") && !newType.toUpperCase().equals("Other")) {
+                // TODO add log
+                throw new InvalidRequestException("Type must be 'Lodging', 'Travel', 'Food' " +
+                                                        "or 'Other'");
+            }
+            if (newType.toUpperCase().equals("LODGING")) {
+                    newType = "200001";
+            }
+            if (newType.toUpperCase().equals("TRAVEL")) {
+                    newType = "200002";
+            }
+            if (newType.toUpperCase().equals("FOOD")) {
+                    newType = "200003";
+            }
+            if (newType.toUpperCase().equals("OTHER")) {
+                    newType = "200004";
+            }
+
+            reimbDAO.updateUserType(reimbId, newType);
+        }
+        
+        return new ResourceCreationResponse("Updated requests") ;
+    }
 }

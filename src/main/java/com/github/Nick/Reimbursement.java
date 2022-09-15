@@ -19,10 +19,6 @@ public class Reimbursement {
     private static Logger logger = LogManager.getLogger(Reimbursement.class);
     public static void main(String[] args) throws LifecycleException {
 
-        //! System.out.println("Start");
-        //! DateTimeFormatter format = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
-        //! System.out.println(LocalDateTime.now().format(format));
-
         logger.info("Starting Reimbursement app");
 
         String docBase = System.getProperty("java.io.tmpdir");
@@ -58,6 +54,5 @@ public class Reimbursement {
         logger.info("Reimbursement started");
 
         webServer.getServer().await();
-        //! System.out.print("Web application started.");
     }
 }

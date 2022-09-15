@@ -6,7 +6,7 @@ import java.util.Objects;
 public class ReimbResponse implements Serializable{
     
     private String reimb_id;
-    private int amount;
+    private double amount;
     private String submitted;
     private String resolved;
     private String description;
@@ -37,11 +37,11 @@ public class ReimbResponse implements Serializable{
         this.reimb_id = reimb_id;
     }
 
-    public int getAmount() {
+    public double getAmount() {
         return amount;
     }
 
-    public void setAmount(int amount) {
+    public void setAmount(Double amount) {
         this.amount = amount;
     }
 
