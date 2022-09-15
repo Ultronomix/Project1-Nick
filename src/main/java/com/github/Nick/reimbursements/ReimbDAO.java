@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -111,24 +112,30 @@ public class ReimbDAO {
     public String updateRequestStatus (String status, String reimb_id, String resolver_id) {
 
         //TODO add log
-        String updateSql = "UPDATE ers_reimbursements SET status = ?, resolved = ?, resolver_id = ? WHERE reimb_id = ?";
-        DateTimeFormatter format = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+        String updateSql = "UPDATE ers_reimbursements SET status_id = ?, resolved = ?, resolver_id = ? WHERE reimb_id = ?";
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-mm-dd hh:mm:ss");
 
         try (Connection conn = ConnectionFactory.getInstance().getConnection()) {
 
             PreparedStatement pstmt = conn.prepareStatement(updateSql);
+            System.out.println("test1");
             pstmt.setString(1, status);
-            pstmt.setString(2, LocalDateTime.now().format(format));
+            System.out.println("test2");
+            pstmt.setTimestamp(2, Timestamp.valueOf(LocalDateTime.now()));
+            System.out.println("test3");
             pstmt.setString(3, resolver_id);
+            System.out.println("test4");
             pstmt.setString(4, reimb_id);
-
+            System.out.println("test5");
             // ResultSet rs =
+            System.out.print(pstmt);
             pstmt.executeUpdate();
-            
+            System.out.println("test6");
             return "Updated status";
             //TODO add log
         } catch (SQLException e) {
             // TODO add log
+            e.printStackTrace();
             throw new DataSourceException(e);
         }
 

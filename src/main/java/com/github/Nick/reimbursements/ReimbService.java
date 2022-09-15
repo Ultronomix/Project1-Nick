@@ -89,7 +89,7 @@ public class ReimbService {
         // TODO add log
     }
 
-    public ResourceCreationResponse updateReimb (UpdateReimbRequest updateReimb, String idToSearchFor) {
+    public ResourceCreationResponse updateReimb (UpdateReimbRequest updateReimb, String reimbIdToSearchFor, String resolver_id) {
 
         // TODO add log
         if (updateReimb == null) {
@@ -97,9 +97,17 @@ public class ReimbService {
             throw new InvalidRequestException("Provide request payload");
         }
 
-        String reimbToUpdate = updateReimb.extractEntity().getStatus();
-        // TODO create update method
-        return null;
+        String reimbToUpdate = updateReimb.extractEntity().getStatus().toUpperCase();
+
+        if(reimbToUpdate.equals("APPROVED")) {
+            reimbToUpdate = "100001";
+        } else if (reimbToUpdate.equals("DENIED")) {
+            reimbToUpdate = "100003";
+        }
+
+        String update = reimbDAO.updateRequestStatus(reimbToUpdate, reimbIdToSearchFor, resolver_id);
+
+        return new ResourceCreationResponse(update);
     }
 
 }
