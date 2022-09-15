@@ -166,7 +166,69 @@ public class ReimbService {
 
             reimbDAO.updateUserType(reimbId, newType);
         }
-        
+        // TODO add log
         return new ResourceCreationResponse("Updated requests") ;
+    }
+
+    public ResourceCreationResponse createRequest (NewReimbRequest newRequest, String user_id) {
+
+        // TODO add log
+        if (newRequest == null) {
+            // TODO add log
+            throw new InvalidRequestException("Provide request payload was empty.");
+        }
+        if (newRequest.getReimb_id() == null || newRequest.getReimb_id().trim().length() <= 0) {
+            // TODO add log
+            throw new InvalidRequestException("Reimbursement id cannot be empty.");
+
+        }
+        if (newRequest.getAmount() <= 0.0 || newRequest.getAmount() > 9999.99) {
+            // TODO add log
+            throw new InvalidRequestException("Amount must be between 0 and 10,000.00.");
+
+        }
+        if (newRequest.getDescription() == null || newRequest.getDescription().trim().length() <= 0) {
+            // TODO add log
+            throw new InvalidRequestException("Description cannot be empty.");
+
+        }
+        if (newRequest.getPayment_id() == null || newRequest.getReimb_id().trim().length() <= 0) {
+            // TODO add log
+            throw new InvalidRequestException("Payment id cannot be empty.");
+
+        }
+        if (newRequest.getType() == null || newRequest.getReimb_id().trim().length() <= 0) {
+            // TODO add log
+            throw new InvalidRequestException("Type cannot be empty. Enter 'Lodging', 'Travel', " +
+                                                "'Food', or 'Other'.");
+
+        }
+        if (newRequest.getType().trim().toUpperCase().equals("LODGING")) {
+
+            newRequest.setType("200001");
+
+        } else if (newRequest.getType().trim().toUpperCase().equals("TRAVEL")) {
+
+            newRequest.setType("200002");
+
+        } else if (newRequest.getType().trim().toUpperCase().equals("FOOD")) {
+
+            newRequest.setType("200003");
+
+        } else if (newRequest.getType().trim().toUpperCase().equals("OTHEr")) {
+
+            newRequest.setType("200004");
+
+        } else {
+            // TODO add log
+            throw new InvalidRequestException("Type must be either 'Lodging', 'Travel', " +
+                                                "'Food', or 'Other'");
+        }
+
+        // TODO add log
+        Reimb requestToMake = newRequest.extractEntity();
+        String requestCreated = reimbDAO.newRequest(requestToMake, user_id);
+        // TODO add log
+        return new ResourceCreationResponse(requestCreated);
     }
 }

@@ -100,17 +100,43 @@ public class ReimbServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
+        // TODO add log
         ObjectMapper jsonMapper = new ObjectMapper();
         resp.setContentType("application/json");
 
         HttpSession reimbSession = req.getSession(false);
 
         if (reimbSession == null) {
+            // TODO add log
             resp.setStatus(401);
             resp.getWriter().write(jsonMapper
                     .writeValueAsString(new ErrorResponse(401, "Requestor not authenticated with server, log in")));
             return;
         }
+
+        UserResponse requester = (UserResponse) reimbSession.getAttribute("authUser");
+
+        try {
+
+            ResourceCreationResponse responseBody = 
+                reimbService.createRequest(jsonMapper.readValue(req.getInputStream(), NewReimbRequest.class), 
+                                            requester.getUser_id());
+            resp.getWriter().write(jsonMapper.writeValueAsString(responseBody));
+
+        } catch (InvalidRequestException | JsonMappingException e) {
+            // TODO add log
+            resp.setStatus(400);
+            resp.getWriter().write(jsonMapper.writeValueAsString(new ErrorResponse(400, e.getMessage())));
+        } catch (AuthenticationException e) {
+            // TODO add log
+            resp.setStatus(409);
+            resp.getWriter().write(jsonMapper.writeValueAsString(new ErrorResponse(409, e.getMessage())));
+        } catch (DataSourceException e) {
+            // TODO add log
+            resp.setStatus(500);
+            resp.getWriter().write(jsonMapper.writeValueAsString(new ErrorResponse(500, e.getMessage())));
+        }
+        // TODO add log
 
         resp.getWriter().write("Post to /reimb work");
     }
@@ -175,7 +201,7 @@ public class ReimbServlet extends HttpServlet {
             resp.setStatus(500);
             resp.getWriter().write(jsonMapper.writeValueAsString(new ErrorResponse(500, e.getMessage())));
         }
-
+        // TODO add log
         resp.getWriter().write("\nPut to /reimb end");
     }
 }

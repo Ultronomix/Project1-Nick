@@ -228,6 +228,34 @@ public class ReimbDAO {
         }
     }
 
+    public String newRequest (Reimb reimb, String user_id) {
+
+        // TODO add log
+        String requestSql = "INSERT INTO ers_reimbursements " +
+                            "(reimb_id, amount, submitted, description, payment_id, author_id, status_id, type_id) " +
+                            "VALUES " +
+                            "(?, ?, current_date, ?, ?, ?, 100002, ?)";
+                            
+        try (Connection conn = ConnectionFactory.getInstance().getConnection()) {
+
+            PreparedStatement ptsmt = conn.prepareStatement(requestSql);
+            ptsmt.setString(1, reimb.getReimb_id());
+            ptsmt.setDouble(2, reimb.getAmount());
+            ptsmt.setString(3, reimb.getDescription());
+            ptsmt.setString(4, reimb.getPayment_id());
+            ptsmt.setString(5, user_id);
+            ptsmt.setString(6, reimb.getType());
+
+            ptsmt.executeUpdate();
+
+            return "Request created";
+            // TODO add log
+        } catch (SQLException e) {
+            // TODO add log
+            throw new DataSourceException(e);
+        }
+    }
+
     private List<Reimb> mapResultSet(ResultSet rs) throws SQLException {
 
         List<Reimb> reimbs = new ArrayList<>();

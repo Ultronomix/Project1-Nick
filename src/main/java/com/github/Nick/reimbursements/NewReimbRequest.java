@@ -66,7 +66,7 @@ public class NewReimbRequest implements Request<Reimb> {
         return type;
     }
 
-    public void setType_id(String type) {
+    public void setType(String type) {
         this.type = type;
     }
 
