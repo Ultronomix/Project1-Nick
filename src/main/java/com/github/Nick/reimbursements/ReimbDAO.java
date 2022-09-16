@@ -76,6 +76,7 @@ public class ReimbDAO {
             pstmt.setString(1, reimbid);
             ResultSet rs = pstmt.executeQuery();
 
+            
             return mapResultSet(rs).stream().findFirst();
             // TODO add log
         } catch (SQLException e) {
@@ -89,7 +90,6 @@ public class ReimbDAO {
         
         // TODO add log
         String sqlStatus = select + "WHERE ers.status = ?";
-        List<Reimb> reimbsStatus = new  ArrayList<>();
 
         try (Connection conn = ConnectionFactory.getInstance().getConnection()) {
             
@@ -97,9 +97,26 @@ public class ReimbDAO {
             pstmt.setString(1, status.toUpperCase());
             ResultSet rs = pstmt.executeQuery();
 
-            reimbsStatus = mapResultSet(rs);
+            return mapResultSet(rs);
+            // TODO add log
+        } catch (SQLException e) {
+            // TODO add log
+            throw new DataSourceException(e);
+        }
+    }
 
-            return reimbsStatus;
+    public List<Reimb> getReimbByUserID (String userId) {
+
+        // TODO add log
+        String sqlId = select + "WHERE er.author_id = ?";
+
+        try (Connection conn = ConnectionFactory.getInstance().getConnection()) {
+
+            PreparedStatement pstmt = conn.prepareStatement(sqlId);
+            pstmt.setString(1, userId);
+            ResultSet rs = pstmt.executeQuery();
+
+            return mapResultSet(rs);
             // TODO add log
         } catch (SQLException e) {
             // TODO add log
@@ -142,11 +159,13 @@ public class ReimbDAO {
             pstmt.setString(3, resolver_id);
             pstmt.setString(4, reimb_id);
             // ResultSet rs =
+            System.out.println(pstmt);
             pstmt.executeUpdate();
             return "Updated status";
             //TODO add log
         } catch (SQLException e) {
             // TODO add log
+            e.printStackTrace();
             throw new DataSourceException(e);
         }
 
@@ -248,7 +267,7 @@ public class ReimbDAO {
 
             ptsmt.executeUpdate();
 
-            return "Request created";
+            return "Request created" + reimb.getReimb_id();
             // TODO add log
         } catch (SQLException e) {
             // TODO add log

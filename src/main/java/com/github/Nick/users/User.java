@@ -4,9 +4,6 @@ import java.util.Objects;
 
 //* POJO = Plain Ol' Java Object
 public class User {
-    //! Delete
-    private final String yellowText = "\u001B[33m";
-    private final String defaultText = "\u001B[0m";
 
     private String user_id;
     private String username;
@@ -87,14 +84,6 @@ public class User {
     public boolean getIs_active() {
         return is_active;
     }
-
-    //! public void setRole_id (String role_id) {
-    //!     this.role_id = role_id;
-    //! }
-
-    //! public String getRole_id() {
-    //!     return role_id;
-    //! }
 
     public void setRole (String role) {
         this.role = role;

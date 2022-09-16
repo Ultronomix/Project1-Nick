@@ -39,7 +39,7 @@ public class AuthServlet extends HttpServlet {
 
         ObjectMapper jsonMapper = new ObjectMapper();
         resp.setContentType("application/json");
-        //! System.out.println("U: " + credentials.getUsername() + " P: " + credentials.getPassword());
+        
         try {
             Credentials credentials = jsonMapper.readValue(req.getInputStream(),Credentials.class);
             UserResponse responseBody = authService.authenticate(credentials);

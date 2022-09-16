@@ -1,12 +1,8 @@
 package com.github.Nick.auth;
 
-import java.util.NoSuchElementException;
-import java.util.Optional;
-
 import com.github.Nick.common.exceptions.AuthenticationException;
 import com.github.Nick.common.exceptions.InvalidRequestException;
 import com.github.Nick.common.exceptions.ResourceNotFoundException;
-import com.github.Nick.users.User;
 import com.github.Nick.users.UserDAO;
 import com.github.Nick.users.UserResponse;
 
@@ -37,8 +33,6 @@ public class AuthService {
             
             if(active == true) {
                 return user;
-                //  return userDAO.findUserByUsernameAndPassword(credentials.getUsername(), credentials.getPassword())
-                //      .map(UserResponse :: new).orElseThrow(AuthenticationException::new);
             } else {
                 throw new InvalidRequestException("User is inactive");
             }

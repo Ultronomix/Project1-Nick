@@ -4,6 +4,9 @@ import com.github.Nick.common.Request;
 
 public class UpdateReimbRequest implements Request<Reimb> {
 
+    //? Search for reimbursement
+    private String reimbId;
+
     //? Finance Manager
     private String status;
     
@@ -45,22 +48,28 @@ public class UpdateReimbRequest implements Request<Reimb> {
         return description;
     }
     
+    public String getReimbId() {
+        return reimbId;
+    }
+
+    public void setReimbId(String reimbId) {
+        this.reimbId = reimbId;
+    }
     
     @Override
     public String toString() {
         return "UpdateReimbRequet [" +
-        "status = '" + status + "'']";
+        "Reimb = '" + reimbId + "' updated]";
     }
     
     @Override
     public Reimb extractEntity() {
         Reimb extractedEntity = new Reimb();
+        extractedEntity.setReimb_id(this.reimbId);
         extractedEntity.setStatus(this.status);
         extractedEntity.setAmount(this.amount);
         extractedEntity.setDescription(this.description);
         extractedEntity.setType(this.type);
         return extractedEntity;
     }
-
-    
 }

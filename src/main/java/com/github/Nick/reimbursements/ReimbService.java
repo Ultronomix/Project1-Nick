@@ -6,7 +6,6 @@ import java.util.List;
 import com.github.Nick.common.ResourceCreationResponse;
 import com.github.Nick.common.exceptions.InvalidRequestException;
 import com.github.Nick.common.exceptions.ResourceNotFoundException;
-import com.github.Nick.common.exceptions.ResourcePersistenceException;
 
 public class ReimbService {
 
@@ -43,6 +42,25 @@ public class ReimbService {
     
     }
 
+    public List<ReimbResponse> getReimbByUserId (String id) {
+
+        // TODO add log
+        List<ReimbResponse> result = new ArrayList<>();
+        List<Reimb> reimbs = reimbDAO.getReimbByUserID(id);
+        
+        if (reimbs.isEmpty()) {
+            // TODO add log
+            throw new ResourceNotFoundException();
+        }
+
+        for (Reimb reimb : reimbs) {
+            result.add(new ReimbResponse(reimb));
+        }
+        
+        return result;
+        // TODO add log
+    }
+
     public List<ReimbResponse> getReimbByStatus (String status) {
 
         // TODO add log
@@ -53,10 +71,14 @@ public class ReimbService {
             throw new InvalidRequestException("Status cannot be empty. Enter 'Approved', 'Pending', " +
                                                 " or 'Denied'");
         }
-        // TODO add log
 
         List<ReimbResponse> result = new ArrayList<>();
         List<Reimb> reimbs = reimbDAO.getReimbByStatus(status);
+
+        if (reimbs.isEmpty()) {
+            // TODO add log
+            throw new ResourceNotFoundException();
+        }
 
         for (Reimb reimb : reimbs) {
             result.add(new ReimbResponse(reimb));
@@ -90,7 +112,7 @@ public class ReimbService {
         // TODO add log
     }
 
-    public ResourceCreationResponse updateReimb (UpdateReimbRequest updateReimb, String reimbIdToSearchFor, String resolver_id) {
+    public ResourceCreationResponse updateReimb (UpdateReimbRequest updateReimb, String resolver_id) {
 
         // TODO add log
         if (updateReimb == null) {
@@ -98,51 +120,48 @@ public class ReimbService {
             throw new InvalidRequestException("Provide request payload");
         }
 
-        String reimbToUpdate = updateReimb.extractEntity().getStatus().toUpperCase();
+        String reimbToUpdate = updateReimb.extractEntity().getReimb_id();
+        String reimbStatueChange = updateReimb.extractEntity().getStatus().toUpperCase();
 
-        if(reimbToUpdate.equals("APPROVED")) {
-            reimbToUpdate = "100001";
-        } else if (reimbToUpdate.equals("DENIED")) {
-            reimbToUpdate = "100003";
+        if(reimbStatueChange.equals("APPROVED")) {
+            reimbStatueChange = "100001";
+        } else if (reimbStatueChange.equals("DENIED")) {
+            reimbStatueChange = "100003";
         }
 
-        String update = reimbDAO.updateRequestStatus(reimbToUpdate, reimbIdToSearchFor, resolver_id);
+        String updated = reimbDAO.updateRequestStatus(reimbStatueChange, reimbToUpdate, resolver_id);
 
-        return new ResourceCreationResponse(update);
+        return new ResourceCreationResponse(updated);
+        // TODO add log
     }
 
-    public ResourceCreationResponse updateUserReimb (UpdateReimbRequest updateReimb, String reimbId) {
+    public ResourceCreationResponse updateUserReimb (UpdateReimbRequest updateReimb) {
         
         // TODO add logs
-        if (updateReimb == null) {
+        if (updateReimb == null || updateReimb.extractEntity().getStatus() != null) {
             // TODO add log
-            throw new InvalidRequestException("Provide request payload");
+            throw new InvalidRequestException("Request can not be empty and user cannot change the status.");
         }
-
-        if (!reimbDAO.isPending(reimbId)) {
-            // TODO add log
-            throw new ResourcePersistenceException("Request is not pending.");
-        }
-
+        
+        String reimbIdToSearch = updateReimb.extractEntity().getReimb_id();
         double newAmount = updateReimb.extractEntity().getAmount();
         String newDescription = updateReimb.extractEntity().getDescription();
         String newType = updateReimb.extractEntity().getType();
 
-        System.out.println(newAmount);
+        if (!reimbDAO.isPending(reimbIdToSearch)) {
+            // TODO add log
+            throw new InvalidRequestException("Request is not pending.");
+        }
 
         if (newAmount > 0) {
-            if (newAmount > 9999.99) {
+            if (newAmount > 9999.99 || newAmount == 0.0) {
                 // TODO add log
-                throw new InvalidRequestException("Amount must be below 10,000.");
+                throw new InvalidRequestException("Amount must be between 0 and 10,000");
             }
-
-            reimbDAO.updateUserAmount(reimbId, newAmount);
-
+            reimbDAO.updateUserAmount(reimbIdToSearch, newAmount);
         }
         if (newDescription != null) {
-
-            reimbDAO.updateUserDescription(reimbId, newDescription);
-
+            reimbDAO.updateUserDescription(reimbIdToSearch, newDescription);
         }
         if (newType != null) {
             if (!newType.toUpperCase().equals("LODGING") && !newType.toUpperCase().equals("TRAVEL")
@@ -163,11 +182,10 @@ public class ReimbService {
             if (newType.toUpperCase().equals("OTHER")) {
                     newType = "200004";
             }
-
-            reimbDAO.updateUserType(reimbId, newType);
+            reimbDAO.updateUserType(reimbIdToSearch, newType);
         }
-        // TODO add log
         return new ResourceCreationResponse("Updated requests") ;
+        // TODO add log
     }
 
     public ResourceCreationResponse createRequest (NewReimbRequest newRequest, String user_id) {
@@ -180,45 +198,32 @@ public class ReimbService {
         if (newRequest.getReimb_id() == null || newRequest.getReimb_id().trim().length() <= 0) {
             // TODO add log
             throw new InvalidRequestException("Reimbursement id cannot be empty.");
-
         }
         if (newRequest.getAmount() <= 0.0 || newRequest.getAmount() > 9999.99) {
             // TODO add log
             throw new InvalidRequestException("Amount must be between 0 and 10,000.00.");
-
         }
         if (newRequest.getDescription() == null || newRequest.getDescription().trim().length() <= 0) {
             // TODO add log
             throw new InvalidRequestException("Description cannot be empty.");
-
         }
         if (newRequest.getPayment_id() == null || newRequest.getReimb_id().trim().length() <= 0) {
             // TODO add log
             throw new InvalidRequestException("Payment id cannot be empty.");
-
         }
         if (newRequest.getType() == null || newRequest.getReimb_id().trim().length() <= 0) {
             // TODO add log
             throw new InvalidRequestException("Type cannot be empty. Enter 'Lodging', 'Travel', " +
                                                 "'Food', or 'Other'.");
-
         }
         if (newRequest.getType().trim().toUpperCase().equals("LODGING")) {
-
             newRequest.setType("200001");
-
         } else if (newRequest.getType().trim().toUpperCase().equals("TRAVEL")) {
-
             newRequest.setType("200002");
-
         } else if (newRequest.getType().trim().toUpperCase().equals("FOOD")) {
-
             newRequest.setType("200003");
-
         } else if (newRequest.getType().trim().toUpperCase().equals("OTHEr")) {
-
             newRequest.setType("200004");
-
         } else {
             // TODO add log
             throw new InvalidRequestException("Type must be either 'Lodging', 'Travel', " +
@@ -228,7 +233,7 @@ public class ReimbService {
         // TODO add log
         Reimb requestToMake = newRequest.extractEntity();
         String requestCreated = reimbDAO.newRequest(requestToMake, user_id);
-        // TODO add log
         return new ResourceCreationResponse(requestCreated);
+        // TODO add log
     }
 }

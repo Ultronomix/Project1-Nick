@@ -11,10 +11,10 @@ public class ReimbResponse implements Serializable{
     private String resolved;
     private String description;
     private String payment_id;
-    private String author_id; // ? links to user_id
-    private String resolver_id; // ? links to user_id
-    private String status; // ? links to reimbursement statuses
-    private String type; // ? links to reimbursement type
+    private String author_id; //? links to user_id
+    private String resolver_id; //? links to user_id
+    private String status; //? links to reimbursement statuses
+    private String type; //? links to reimbursement type
 
     public ReimbResponse (Reimb subject) {
         this.reimb_id = subject.getReimb_id();

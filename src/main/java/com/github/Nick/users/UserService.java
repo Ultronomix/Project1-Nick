@@ -18,6 +18,8 @@ public class UserService {
 
     //? Get all users
     public List<UserResponse> getAllUsers() {
+
+        // TODO add log
         //* Functional approach (more declarative)
         //? return userDAO.getAllUsers().stream()
         //?      .map(UserResponse::new).collect(Collectors.toList());
@@ -28,7 +30,9 @@ public class UserService {
         for (User user : users) {
             result.add(new UserResponse(user));
         }
+
         return result;
+        // TODO add log
     }
 
     //? Search for User by user_id
@@ -126,7 +130,7 @@ public class UserService {
         String updateEmail = userDAO.updateUserEmail(userToUpdate, idToSearchFor);
         System.out.println("update: " + updateEmail); //! delete
         // TODO create DAO
-        // String updatedUser = userDAO.update(userToUpdate);
         return new ResourceCreationResponse(updateEmail);
+        // TODO add log
     }
 }

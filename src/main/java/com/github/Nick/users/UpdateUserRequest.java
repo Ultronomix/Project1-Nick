@@ -80,7 +80,6 @@ public class UpdateUserRequest implements Request<User> {
 
     @Override
     public User extractEntity() {
-        // TODO
         User extractedEntity = new User();
         extractedEntity.setEmail(this.email);
         extractedEntity.setGiven_name(this.given_name);
