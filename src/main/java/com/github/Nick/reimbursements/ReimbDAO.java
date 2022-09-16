@@ -252,6 +252,7 @@ public class ReimbDAO {
             // TODO add log
         } catch (SQLException e) {
             // TODO add log
+            e.printStackTrace();
             throw new DataSourceException(e);
         }
     }
