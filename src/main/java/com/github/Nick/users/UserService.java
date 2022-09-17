@@ -19,7 +19,6 @@ public class UserService {
     //? Get all users
     public List<UserResponse> getAllUsers() {
 
-        // TODO add log
         //* Functional approach (more declarative)
         //? return userDAO.getAllUsers().stream()
         //?      .map(UserResponse::new).collect(Collectors.toList());
@@ -33,7 +32,7 @@ public class UserService {
         }
 
         return result;
-        // TODO add log
+
     }
 
     //? Search for User by user_id
@@ -130,6 +129,6 @@ public class UserService {
         // String updateEmail = userDAO.updateUserEmail(userToUpdate, idToSearchFor);
         // TODO create DAO
         return new ResourceCreationResponse("Updated User");
-        // TODO add log
+        
     }
 }

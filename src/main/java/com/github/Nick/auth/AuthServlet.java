@@ -65,10 +65,10 @@ public class AuthServlet extends HttpServlet {
             resp.setStatus(401); //* Unauthorized
             resp.getWriter().write(jsonMapper.writeValueAsString(new ErrorResponse(401, e.getMessage())));
         } catch (DataSourceException e) {
-            logger.warn("A data source error occures at {}, error message {}", LocalDateTime.now().format(format), e.getMessage());
+            logger.warn("A data source error occurs at {}, error message {}", LocalDateTime.now().format(format), e.getMessage());
             resp.setStatus(500); //* Internal error
             resp.getWriter().write(jsonMapper.writeValueAsString(new ErrorResponse(500, e.getMessage())));
-        } catch (RuntimeException e) { // TODO edit inavtive user reponse
+        } catch (RuntimeException e) { // TODO edit inactive user response
             resp.getWriter().write(jsonMapper.writeValueAsString("User inactive"));
         }
     }

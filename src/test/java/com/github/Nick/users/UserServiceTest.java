@@ -409,7 +409,6 @@ public class UserServiceTest {
         newUser.setPassword("password");
         newUser.setUser_id("6");
         newUser.setUsername("Tester");
-        User user = newUser.extractEntity();
         
         when(mockUserDAO.isEmailTaken(newUser.getEmail())).thenReturn(true);
 
@@ -431,7 +430,6 @@ public class UserServiceTest {
         newUser.setPassword("password");
         newUser.setUser_id("6");
         newUser.setUsername("Tester");
-        User user = newUser.extractEntity();
         
         when(mockUserDAO.isUsernameTaken(newUser.getUsername())).thenReturn(true);
 
@@ -469,8 +467,6 @@ public class UserServiceTest {
 
     @Test
     public void testUpdateUser_InvalidRequestException_Null() {
-
-        UpdateUserRequest updateUser = new UpdateUserRequest();
 
         assertThrows(InvalidRequestException.class, () -> {
             sut.updateUser(null, "1");

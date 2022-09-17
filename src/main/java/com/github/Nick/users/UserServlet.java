@@ -98,7 +98,7 @@ public class UserServlet extends HttpServlet {
             resp.setStatus(400);// * bad request
             resp.getWriter().write(jsonMapper.writeValueAsString(new ErrorResponse(400, e.getMessage())));
         } catch (AuthenticationException e) {
-            resp.setStatus(409); // * conflit; indicate that provided resource could not be saved
+            resp.setStatus(409); // * conflict; indicate that provided resource could not be saved
             resp.getWriter().write(jsonMapper.writeValueAsString(new ErrorResponse(409, e.getMessage())));
         } catch (DataSourceException e) {
             resp.setStatus(500); // * internal error
@@ -150,7 +150,7 @@ public class UserServlet extends HttpServlet {
             resp.setStatus(400);// * bad request
             resp.getWriter().write(jsonMapper.writeValueAsString(new ErrorResponse(400, e.getMessage())));
         } catch (AuthenticationException e) {
-            resp.setStatus(409); // * conflit; indicate that provided resource could not be saved
+            resp.setStatus(409); // * conflict; indicate that provided resource could not be saved
             resp.getWriter().write(jsonMapper.writeValueAsString(new ErrorResponse(409, e.getMessage())));
         } catch (DataSourceException e) {
             resp.setStatus(500); // * internal error

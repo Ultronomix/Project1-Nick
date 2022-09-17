@@ -1,11 +1,7 @@
 package com.github.Nick.users;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
