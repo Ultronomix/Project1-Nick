@@ -1,13 +1,21 @@
 package com.github.Nick.reimbursements;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.github.Nick.common.ResourceCreationResponse;
 import com.github.Nick.common.exceptions.InvalidRequestException;
 import com.github.Nick.common.exceptions.ResourceNotFoundException;
 
 public class ReimbService {
+    
+    private static Logger logger = LogManager.getLogger(ReimbService.class);
+    DateTimeFormatter format = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
 
     private final ReimbDAO reimbDAO;
 
@@ -17,7 +25,6 @@ public class ReimbService {
     
     public List<ReimbResponse> getAllReimb () {
 
-        // TODO add log
         List<ReimbResponse> result = new ArrayList<>();
         List<Reimb> reimbs = reimbDAO.getAllReimb();
 
@@ -26,30 +33,27 @@ public class ReimbService {
         }
 
         return result;
-        // TODO add log
+        
     }
 
     public ReimbResponse getReimbById (String id) {
 
-        // TODO add log
         if (id == null || id.trim().length() <= 0) {
-            // TODO add log
+            logger.warn("Invalid user id provided at {}", LocalDateTime.now().format(format));
             throw new InvalidRequestException("A user's id must be provided");
         }
 
         return reimbDAO.getReimbById(id).map(ReimbResponse::new).orElseThrow(ResourceNotFoundException::new);
-        // TODO add logs
     
     }
 
     public List<ReimbResponse> getReimbByUserId (String id) {
 
-        // TODO add log
         List<ReimbResponse> result = new ArrayList<>();
         List<Reimb> reimbs = reimbDAO.getReimbByUserID(id);
         
         if (reimbs.isEmpty()) {
-            // TODO add log
+            logger.warn("Reimbursement request not found at {}", LocalDateTime.now().format(format));
             throw new ResourceNotFoundException();
         }
 
@@ -58,16 +62,15 @@ public class ReimbService {
         }
         
         return result;
-        // TODO add log
+
     }
 
     public List<ReimbResponse> getReimbByStatus (String status) {
 
-        // TODO add log
         if (status == null || (!status.toUpperCase().trim().equals("APPROVED") 
                             && !status.toUpperCase().trim().equals("PENDING") 
                             && !status.toUpperCase().trim().equals("DENIED"))) {
-            // TODO add log
+            logger.warn("Empty data provided at {}", LocalDateTime.now().format(format));
             throw new InvalidRequestException("Status cannot be empty. Enter 'Approved', 'Pending', " +
                                                 " or 'Denied'");
         }
@@ -76,7 +79,7 @@ public class ReimbService {
         List<Reimb> reimbs = reimbDAO.getReimbByStatus(status);
 
         if (reimbs.isEmpty()) {
-            // TODO add log
+            logger.warn("No reimbursement found at {}", LocalDateTime.now().format(format));
             throw new ResourceNotFoundException();
         }
 
@@ -85,17 +88,16 @@ public class ReimbService {
         }
         
         return result;
-        // TODO add log
+        
     }
 
     public List<ReimbResponse> getReimbByType (String type) {
 
-        // TODO add log
         if (type == null || (!type.toUpperCase().trim().equals("LODGING") 
                           && !type.toUpperCase().trim().equals("TRAVEL")
                           && !type.toUpperCase().trim().equals("FOOD")
                           && !type.toUpperCase().trim().equals("OTHER"))) {
-            // TODO add log
+            logger.warn("Invalid data provided at {}", LocalDateTime.now().format(format));
             throw new InvalidRequestException("Type must be 'Lodging', 'Travel', " +
                                               "'Food', or 'Other'");
             
@@ -109,14 +111,13 @@ public class ReimbService {
         }
 
         return result;
-        // TODO add log
+    
     }
 
     public ResourceCreationResponse updateReimb (UpdateReimbRequest updateReimb, String resolver_id) {
 
-        // TODO add log
         if (updateReimb == null) {
-            // TODO add log
+            logger.warn("No information received at {}",LocalDateTime.now().format(format));
             throw new InvalidRequestException("Provide request payload");
         }
 
@@ -132,14 +133,13 @@ public class ReimbService {
         String updated = reimbDAO.updateRequestStatus(reimbStatueChange, reimbToUpdate, resolver_id);
 
         return new ResourceCreationResponse(updated);
-        // TODO add log
+
     }
 
     public ResourceCreationResponse updateUserReimb (UpdateReimbRequest updateReimb) {
         
-        // TODO add logs
         if (updateReimb == null || updateReimb.extractEntity().getStatus() != null) {
-            // TODO add log
+            logger.warn("Invalid request at {}", LocalDateTime.now().format(format));
             throw new InvalidRequestException("Request can not be empty and user cannot change the status.");
         }
         
@@ -149,13 +149,13 @@ public class ReimbService {
         String newType = updateReimb.extractEntity().getType();
 
         if (!reimbDAO.isPending(reimbIdToSearch)) {
-            // TODO add log
+            logger.warn("Denied request at {}", LocalDateTime.now().format(format));
             throw new InvalidRequestException("Request is not pending.");
         }
 
         if (newAmount > 0) {
             if (newAmount > 9999.99 || newAmount == 0.0) {
-                // TODO add log
+                logger.warn("Invalid amount enter at {}", LocalDateTime.now().format(format));
                 throw new InvalidRequestException("Amount must be between 0 and 10,000");
             }
             reimbDAO.updateUserAmount(reimbIdToSearch, newAmount);
@@ -166,7 +166,7 @@ public class ReimbService {
         if (newType != null) {
             if (!newType.toUpperCase().equals("LODGING") && !newType.toUpperCase().equals("TRAVEL")
                 && !newType.toUpperCase().equals("FOOD") && !newType.toUpperCase().equals("Other")) {
-                // TODO add log
+                logger.warn("Invalid type at {}", LocalDateTime.now().format(format));
                 throw new InvalidRequestException("Type must be 'Lodging', 'Travel', 'Food' " +
                                                         "or 'Other'");
             }
@@ -185,34 +185,33 @@ public class ReimbService {
             reimbDAO.updateUserType(reimbIdToSearch, newType);
         }
         return new ResourceCreationResponse("Updated requests") ;
-        // TODO add log
+ 
     }
 
     public ResourceCreationResponse createRequest (NewReimbRequest newRequest, String user_id) {
 
-        // TODO add log
         if (newRequest == null) {
-            // TODO add log
+            logger.warn("Empty request at {}", LocalDateTime.now().format(format));
             throw new InvalidRequestException("Provide request payload was empty.");
         }
         if (newRequest.getReimb_id() == null || newRequest.getReimb_id().trim().length() <= 0) {
-            // TODO add log
+            logger.warn("Reimbursement id not provided at {}", LocalDateTime.now().format(format));
             throw new InvalidRequestException("Reimbursement id cannot be empty.");
         }
         if (newRequest.getAmount() <= 0.0 || newRequest.getAmount() > 9999.99) {
-            // TODO add log
+            logger.info("Invalid request at {}", LocalDateTime.now().format(format));
             throw new InvalidRequestException("Amount must be between 0 and 10,000.00.");
         }
         if (newRequest.getDescription() == null || newRequest.getDescription().trim().length() <= 0) {
-            // TODO add log
+            logger.info("Invalid request at {}", LocalDateTime.now().format(format));
             throw new InvalidRequestException("Description cannot be empty.");
         }
         if (newRequest.getPayment_id() == null || newRequest.getReimb_id().trim().length() <= 0) {
-            // TODO add log
+            logger.info("Invalid request at {}", LocalDateTime.now().format(format));
             throw new InvalidRequestException("Payment id cannot be empty.");
         }
         if (newRequest.getType() == null || newRequest.getReimb_id().trim().length() <= 0) {
-            // TODO add log
+            logger.info("Invalid request at {}", LocalDateTime.now().format(format));
             throw new InvalidRequestException("Type cannot be empty. Enter 'Lodging', 'Travel', " +
                                                 "'Food', or 'Other'.");
         }
@@ -225,15 +224,14 @@ public class ReimbService {
         } else if (newRequest.getType().trim().toUpperCase().equals("OTHEr")) {
             newRequest.setType("200004");
         } else {
-            // TODO add log
+            logger.info("Invalid request at {}", LocalDateTime.now().format(format));
             throw new InvalidRequestException("Type must be either 'Lodging', 'Travel', " +
                                                 "'Food', or 'Other'");
         }
 
-        // TODO add log
         Reimb requestToMake = newRequest.extractEntity();
         String requestCreated = reimbDAO.newRequest(requestToMake, user_id);
         return new ResourceCreationResponse(requestCreated);
-        // TODO add log
+     
     }
 }

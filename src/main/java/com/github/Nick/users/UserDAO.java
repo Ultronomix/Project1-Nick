@@ -1,6 +1,8 @@
 package com.github.Nick.users;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -10,12 +12,18 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.github.Nick.common.datasource.ConnectionFactory;
 import com.github.Nick.common.exceptions.DataSourceException;
 import com.github.Nick.common.exceptions.ResourceNotFoundException;
 
 //* DAO = Data Access Object 
 public class UserDAO {
+    
+    private static Logger logger = LogManager.getLogger(UserDAO.class);
+    DateTimeFormatter format = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
 
     private final String baseSelect = "SELECT eu.user_id, eu.username, eu.email, eu.password, " +
                                         "eu.given_name, eu.surname, " +
@@ -27,20 +35,18 @@ public class UserDAO {
 
         String sql = baseSelect;
 
-        List<User> allUsers = new ArrayList<>();
-
         try (Connection conn = ConnectionFactory.getInstance().getConnection()) {
 
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(sql);
 
-            allUsers = mapResultSet(rs);
+            return mapResultSet(rs);
 
         } catch (SQLException e) {
-            System.err.println("Something went wrong when connection to database.");
-            e.printStackTrace();
+            logger.warn("Error connecting to database at {}, error message {}", LocalDateTime.now().format(format), e.getMessage());
+            throw new DataSourceException(e);
         }
-        return allUsers;
+
     }
 
     //TODO convert to new database
@@ -64,7 +70,7 @@ public class UserDAO {
     //     }
     //     return "Entry removed";
     // }
-    //TODO edit
+    
     public String save(User user) {
         String sql = "INSERT INTO ers_users (user_id, username, email, password, given_name, surname, is_active, role_id) " +
                         "VALUES (?, ?, ?, ?, ?, ?, ?, '3')";
@@ -86,13 +92,15 @@ public class UserDAO {
             pstmt.setString(6, user.getSurname().trim());
             System.out.println("Active: " + user.getIs_active());
             pstmt.setBoolean(7, user.getIs_active());
+            
             pstmt.executeUpdate();
 
-        } catch (Exception e) {
-            System.err.println("Something went wrong when connecting to database.");
-            e.printStackTrace();
+            return user.getUsername() + " added.";
+
+        } catch (SQLException e) {
+            logger.warn("Error connecting to database at {}, error message {}", LocalDateTime.now().format(format), e.getMessage());
+            throw new DataSourceException(e);
         }
-        return user.getUsername() + " added.";
     }
 
     public Optional<User> findUserByUsernameAndPassword(String username, String password) {
@@ -104,11 +112,13 @@ public class UserDAO {
             PreparedStatement pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, username);
             pstmt.setString(2, password);
+
             ResultSet rs = pstmt.executeQuery();
+            
             return mapResultSet(rs).stream().findFirst();
 
         } catch (SQLException e) {
-            //TODO log exception
+            logger.warn("Error connecting to database at {}, error message {}", LocalDateTime.now().format(format), e.getMessage());
             throw new DataSourceException(e);
         }
     }
@@ -122,11 +132,13 @@ public class UserDAO {
             PreparedStatement pstmt = conn.prepareStatement(sql);
             //for uuid change setString to setObject
             pstmt.setString(1, id);
+
             ResultSet rs = pstmt.executeQuery();
+
             return mapResultSet(rs).stream().findFirst();
 
         } catch (SQLException e) {
-            //TODO log exception
+            logger.warn("Error connecting to database at {}, error message {}", LocalDateTime.now().format(format), e.getMessage());
             throw new DataSourceException(e);
         }
     }
@@ -139,11 +151,13 @@ public class UserDAO {
 
             PreparedStatement pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, username);
+
             ResultSet rs = pstmt.executeQuery();
+
             return mapResultSet(rs).stream().findFirst();
 
         } catch (SQLException e) {
-            //TODO log exception
+            logger.warn("Error connecting to database at {}, error message {}", LocalDateTime.now().format(format), e.getMessage());
             throw new DataSourceException(e);
         }
     }
@@ -156,11 +170,13 @@ public class UserDAO {
 
             PreparedStatement pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, role);
+
             ResultSet rs = pstmt.executeQuery();
+
             return mapResultSet(rs).stream().findFirst();
 
         } catch (SQLException e) {
-            //TODO log exception
+            logger.warn("Error connecting to database at {}, error message {}", LocalDateTime.now().format(format), e.getMessage());
             throw new DataSourceException(e);
         }
     }
@@ -176,7 +192,7 @@ public class UserDAO {
                 return false;
             }
         } catch (NoSuchElementException e) {
-            // TODO create exception and change
+            logger.warn("Error connecting to database at {}, error message {}", LocalDateTime.now().format(format), e.getMessage());
             throw new ResourceNotFoundException();
         }
     }
@@ -193,11 +209,13 @@ public class UserDAO {
 
             PreparedStatement pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, email);
+
             ResultSet rs = pstmt.executeQuery();
+
             return mapResultSet(rs).stream().findFirst();
 
         } catch (SQLException e) {
-            //TODO log exception
+            logger.warn("Error connecting to database at {}, error message {}", LocalDateTime.now().format(format), e.getMessage());
             throw new DataSourceException(e);
         }
     }
@@ -207,7 +225,6 @@ public class UserDAO {
     }
 
     public String updateUser (UpdateUserRequest updateUserRequest) {
-
         return null;
     }
 
@@ -220,18 +237,21 @@ public class UserDAO {
             PreparedStatement pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, email);
             pstmt.setString(2, user_id);
+
             pstmt.executeUpdate();
 
             return "Email Updated";
 
         } catch (SQLException e) {
-            //TODO log exception
+            logger.warn("Error connecting to database at {}, error message {}", LocalDateTime.now().format(format), e.getMessage());
             throw new DataSourceException(e);
         }
     }
 
     private List<User> mapResultSet(ResultSet rs) throws SQLException {
+
         List<User> users = new ArrayList<>();
+
         while (rs.next()) {
             User user = new User();
             user.setUser_id(rs.getString("user_id"));
@@ -242,38 +262,10 @@ public class UserDAO {
             user.setSurname(rs.getString("surname"));
             user.setIs_active(rs.getBoolean("is_active"));
             user.setRole(rs.getString("role"));
+
             users.add(user);
         }
         return users;
-    }
-
-    //TODO Move log
-    public void log(String level, String message) {
-        try {
-            File logFile = new File("logs/app.log");
-            logFile.createNewFile();
-            BufferedWriter logWriter = new BufferedWriter(new FileWriter(logFile, true));
-            logWriter.write(String.format("\n[%s] at %s logged [%s] %s", Thread.currentThread().getName(), LocalDate.now(), level.toUpperCase(), message));
-            logWriter.flush();
-            logWriter.close();
-        } catch (Exception e) {
-            // TODO: handle exception
-            throw new RuntimeException(e);
-        }
-    }
-    //! Remove
-    public String testLog() {
-        
-        try (Connection conn = ConnectionFactory.getInstance().getConnection()) {
-            System.out.println("Conneted");
-            log("WORK", "Connected");
-        } catch (SQLException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-            log("ERROR", e.getMessage());
-            System.out.println("Logged");
-        }
-        return "Done";
     }
 }
 

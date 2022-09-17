@@ -22,8 +22,6 @@ public class UserServlet extends HttpServlet {
 
     private final UserService userService;
 
-    // TODO inject a shared reference to a configured ObjectMapper
-
     public UserServlet(UserService userService) {
         this.userService = userService;
     }
@@ -128,15 +126,17 @@ public class UserServlet extends HttpServlet {
         }
 
         UserResponse requester = (UserResponse) userSession.getAttribute("authUser");
-
+        
         // Only CEO and ADMIN access
         if (!requester.getRole().equals("CEO") && !requester.getRole().equals("ADMIN")) {
             resp.setStatus(403); // Forbidden
             resp.getWriter().write(jsonMapper.writeValueAsString(new ErrorResponse(403, "Requester not permitted to communicate with this endpoint.")));
             return;
         }
-
+        
         // Find user to update
+        // UpdateUserRequest reques = jsonMapper.readValue(req.getInputStream(), UpdateUserRequest.class);
+        // String id = reques.extractEntity().getUser_id();
         String idToSearchFor = req.getParameter("id");
         UserResponse foundUser = userService.getUserbyID(idToSearchFor);
         resp.getWriter().write(jsonMapper.writeValueAsString(foundUser));

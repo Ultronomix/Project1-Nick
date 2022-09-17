@@ -126,10 +126,10 @@ public class UserService {
             // throw new InvalidRequestException("A empty given name or surname");
         }
 
-        String userToUpdate = updateUser.extractEntity().getEmail();
-        String updateEmail = userDAO.updateUserEmail(userToUpdate, idToSearchFor);
+        // String userToUpdate = updateUser.extractEntity().getEmail();
+        // String updateEmail = userDAO.updateUserEmail(userToUpdate, idToSearchFor);
         // TODO create DAO
-        return new ResourceCreationResponse(updateEmail);
+        return new ResourceCreationResponse("Updated User");
         // TODO add log
     }
 }

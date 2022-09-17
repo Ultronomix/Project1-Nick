@@ -7,16 +7,23 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.github.Nick.common.datasource.ConnectionFactory;
 import com.github.Nick.common.exceptions.DataSourceException;
 import com.github.Nick.common.exceptions.ResourceNotFoundException;
 
 public class ReimbDAO {
+
+    private static Logger logger = LogManager.getLogger(ReimbDAO.class);
+    DateTimeFormatter format = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
 
     private final String select = "SELECT er.reimb_id, er.amount, er.submitted, er.resolved, " +
                                 "er.description, er.payment_id, er.author_id, er.resolver_id, " +
@@ -27,6 +34,7 @@ public class ReimbDAO {
 
     public List<Reimb> getAllReimb () {
 
+        logger.info("Getting all reimbursement at {}", LocalDateTime.now().format(format));
         List<Reimb> allreimbs = new ArrayList<>();
 
         try (Connection conn = ConnectionFactory.getInstance().getConnection()) {
@@ -39,15 +47,14 @@ public class ReimbDAO {
             return allreimbs;
 
         } catch (SQLException e) {
-            // TODO add log
+            logger.warn("DataSourceException at {}, error message {}", LocalDateTime.now().format(format), e.getMessage());
             throw new DataSourceException(e);
         }
-
     }
 
     public Optional<Reimb> getReimbById (String id) {
 
-        // TODO add log
+        logger.info("Getting Reimbursements by author id at {}", LocalDateTime.now().format(format));
         String sqlId = select + "WHERE er.author_id = ?";
 
         try (Connection conn = ConnectionFactory.getInstance().getConnection()) {
@@ -57,17 +64,16 @@ public class ReimbDAO {
             ResultSet rs = pstmt.executeQuery();
 
             return mapResultSet(rs).stream().findFirst();
-            // TODO add log
+            
         } catch (SQLException e) {
-            // TODO add log
+            logger.warn("DataSourceException at {}, error message {}", LocalDateTime.now().format(format), e.getMessage());
             throw new DataSourceException(e);
         }
-
     }
 
     public Optional<Reimb> getReimbByReimbId (String reimbid) {
 
-        // TODO add log
+        logger.info("Getting Reimbursement by reimbursement id");
         String sqlId = select + "WHERE er.reimb_id = ?";
 
         try (Connection conn = ConnectionFactory.getInstance().getConnection()) {
@@ -78,17 +84,16 @@ public class ReimbDAO {
 
             
             return mapResultSet(rs).stream().findFirst();
-            // TODO add log
+            
         } catch (SQLException e) {
-            // TODO add log
+            logger.warn("DataSourceException at {}, error message {}", LocalDateTime.now().format(format), e.getMessage());
             throw new DataSourceException(e);
         }
-
     }
 
     public List<Reimb> getReimbByStatus (String status) {
         
-        // TODO add log
+        logger.info("Getting reimbursement by status at {}", LocalDateTime.now().format(format));
         String sqlStatus = select + "WHERE ers.status = ?";
 
         try (Connection conn = ConnectionFactory.getInstance().getConnection()) {
@@ -98,16 +103,16 @@ public class ReimbDAO {
             ResultSet rs = pstmt.executeQuery();
 
             return mapResultSet(rs);
-            // TODO add log
+            
         } catch (SQLException e) {
-            // TODO add log
+            logger.warn("DataSourceException at {}, error message {}", LocalDateTime.now().format(format), e.getMessage());
             throw new DataSourceException(e);
         }
     }
 
     public List<Reimb> getReimbByUserID (String userId) {
 
-        // TODO add log
+        logger.info("Getting all reimbursement by user id at {}", LocalDateTime.now().format(format));
         String sqlId = select + "WHERE er.author_id = ?";
 
         try (Connection conn = ConnectionFactory.getInstance().getConnection()) {
@@ -117,16 +122,16 @@ public class ReimbDAO {
             ResultSet rs = pstmt.executeQuery();
 
             return mapResultSet(rs);
-            // TODO add log
+         
         } catch (SQLException e) {
-            // TODO add log
+            logger.warn("DataSourceException at {}, error message {}", LocalDateTime.now().format(format), e.getMessage());
             throw new DataSourceException(e);
         }
     }
     
     public List<Reimb> getReimbByType (String type) {
 
-        // TODO add log
+        logger.info("Getting all reimbursement type at {}", LocalDateTime.now().format(format));
         String sqlType = select + "WHERE ert.type = ?";
         List<Reimb> reimbsType = new ArrayList<>();
 
@@ -139,16 +144,16 @@ public class ReimbDAO {
             reimbsType = mapResultSet(rs);
 
             return reimbsType;
-            // TODO add log
+            
         } catch (Exception e) {
-            // TODO add log
+            logger.warn("DataSourceException at {}, error message {}", LocalDateTime.now().format(format), e.getMessage());
             throw new DataSourceException(e);
         }
     }
 
     public String updateRequestStatus (String status, String reimb_id, String resolver_id) {
 
-        //TODO add log
+        logger.info("Updating request status at {}", LocalDateTime.now().format(format));
         String updateSql = "UPDATE ers_reimbursements SET status_id = ?, resolved = ?, resolver_id = ? WHERE reimb_id = ?";
 
         try (Connection conn = ConnectionFactory.getInstance().getConnection()) {
@@ -158,14 +163,13 @@ public class ReimbDAO {
             pstmt.setTimestamp(2, Timestamp.valueOf(LocalDateTime.now()));
             pstmt.setString(3, resolver_id);
             pstmt.setString(4, reimb_id);
-            // ResultSet rs =
-            System.out.println(pstmt);
+            
             pstmt.executeUpdate();
+
             return "Updated status";
-            //TODO add log
+            
         } catch (SQLException e) {
-            // TODO add log
-            e.printStackTrace();
+            logger.warn("DataSourceException at {}, error message {}", LocalDateTime.now().format(format), e.getMessage());
             throw new DataSourceException(e);
         }
 
@@ -173,7 +177,7 @@ public class ReimbDAO {
 
     public String updateUserAmount (String reimbId, double newAmount) {
 
-        // TODO add log
+        logger.info("Updating request amount at {}", LocalDateTime.now().format(format));
         String updateAmountSql = "UPDATE ers_reimbursements SET amount = ? WHERE reimb_id = ?";
 
         try (Connection conn = ConnectionFactory.getInstance().getConnection()) {
@@ -185,15 +189,16 @@ public class ReimbDAO {
             pstmt.executeUpdate();
 
             return "Amount ";
+
         } catch (SQLException e) {
-            // TODO add log
+            logger.warn("DataSourceException at {}, error message {}", LocalDateTime.now().format(format), e.getMessage());
             throw new DataSourceException(e);
         }
     }
 
     public String updateUserDescription (String reimbId, String description) {
 
-        // TODO add log
+        logger.info("Updating request description at {}", LocalDateTime.now().format(format));
         String updateAmountSql = "UPDATE ers_reimbursements SET description = ? WHERE reimb_id = ?";
 
         try (Connection conn = ConnectionFactory.getInstance().getConnection()) {
@@ -205,15 +210,16 @@ public class ReimbDAO {
             pstmt.executeUpdate();
             
             return "Description ";
+
         } catch (SQLException e) {
-            // TODO add log
+            logger.warn("DataSourceException at {}, error message {}", LocalDateTime.now().format(format), e.getMessage());
             throw new DataSourceException(e);
         }
     }
     
     public String updateUserType (String reimbId, String type_id) {
 
-        // TODO add log
+        logger.info("Updating request type at {}", LocalDateTime.now().format(format));
         String updateAmountSql = "UPDATE ers_reimbursements SET type_id = ? WHERE reimb_id = ?";
 
         try (Connection conn = ConnectionFactory.getInstance().getConnection()) {
@@ -226,13 +232,14 @@ public class ReimbDAO {
             
             return "Type ";
         } catch (SQLException e) {
-            // TODO add log
+            logger.warn("DataSourceException at {}, error message {}", LocalDateTime.now().format(format), e.getMessage());
             throw new DataSourceException(e);
         }
     }
 
     public boolean isPending (String reimbId) {
 
+        logger.info("Checking if request is pending at {}", LocalDateTime.now().format(format));
         try {
             Optional<Reimb> reimb = getReimbByReimbId(reimbId);
 
@@ -242,14 +249,14 @@ public class ReimbDAO {
                 return false;
             }
         } catch (NoSuchElementException e) {
-            // TODO add log
+            logger.warn("Request not found at {}, error message {}", LocalDateTime.now().format(format), e.getMessage());
             throw new ResourceNotFoundException();
         }
     }
 
     public String newRequest (Reimb reimb, String user_id) {
 
-        // TODO add log
+        logger.info("Creating a new request at {}", LocalDateTime.now().format(format));
         String requestSql = "INSERT INTO ers_reimbursements " +
                             "(reimb_id, amount, submitted, description, payment_id, author_id, status_id, type_id) " +
                             "VALUES " +
@@ -268,10 +275,9 @@ public class ReimbDAO {
             ptsmt.executeUpdate();
 
             return "Request created" + reimb.getReimb_id();
-            // TODO add log
+            
         } catch (SQLException e) {
-            // TODO add log
-            e.printStackTrace();
+            logger.warn("DataSourceException at {}, error message {}", LocalDateTime.now().format(format), e.getMessage());
             throw new DataSourceException(e);
         }
     }
