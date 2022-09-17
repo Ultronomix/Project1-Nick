@@ -27,6 +27,7 @@ public class UserService {
         //* Imperative (more explicit about what is being done)
         List<UserResponse> result = new ArrayList<>();
         List<User> users = userDAO.getAllUsers();
+
         for (User user : users) {
             result.add(new UserResponse(user));
         }
@@ -126,9 +127,7 @@ public class UserService {
         }
 
         String userToUpdate = updateUser.extractEntity().getEmail();
-        System.out.println(userToUpdate); //! delete
         String updateEmail = userDAO.updateUserEmail(userToUpdate, idToSearchFor);
-        System.out.println("update: " + updateEmail); //! delete
         // TODO create DAO
         return new ResourceCreationResponse(updateEmail);
         // TODO add log
