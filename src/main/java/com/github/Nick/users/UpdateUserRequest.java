@@ -10,6 +10,7 @@ public class UpdateUserRequest implements Request<User> {
     private String given_name;
     private String surname;
     private boolean is_active;
+    private String role;
 
     public String getUsername() {
         return username;
@@ -68,23 +69,35 @@ public class UpdateUserRequest implements Request<User> {
         this.is_active = is_active;
     }
 
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+
     @Override
     public String toString() {
         return "Updated {" +
-                "given_name = " + is_active + "' " +
-                "surname = " + surname + "' " +
-                "password = " + password + "' " +
-                "is_active" + is_active + "' " +
+                "email = '" + email + "' " +
+                "given_name = '" + is_active + "' " +
+                "surname = '" + surname + "' " +
+                "password = '" + password + "' " +
+                "is_active = '" + is_active + "' " +
+                "role = '" + role + "' " +
                 "}";
     }
 
     @Override
     public User extractEntity() {
         User extractedEntity = new User();
+        extractedEntity.setUsername(this.username);
         extractedEntity.setEmail(this.email);
         extractedEntity.setGiven_name(this.given_name);
         extractedEntity.setSurname(this.surname);
         extractedEntity.setIs_active(this.is_active);
+        extractedEntity.setRole(role);
         return extractedEntity;
     }
 }

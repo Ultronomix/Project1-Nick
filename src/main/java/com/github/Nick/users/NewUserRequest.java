@@ -71,12 +71,13 @@ public class NewUserRequest implements Request<User>{
     @Override
     public String toString() {
         return "NewUserRequest {" +
-                "user_id = " + user_id + "' " +
-                "username = " + username + "' " + 
-                "given_name = " + is_active + "' " +
-                "surname = " + surname + "' " +
-                "password = " + password + "' " +
-                "is_active" + is_active + "' " +
+                "user_id = '" + user_id + "' " +
+                "username = '" + username + "' " + 
+                "email = '" + email + "' " +
+                "password = '" + password + "' " +
+                "given_name = '" + given_name + "' " +
+                "surname = '" + surname + "' " +
+                "is_active '" + is_active + "' " +
                 "}";
     }
 

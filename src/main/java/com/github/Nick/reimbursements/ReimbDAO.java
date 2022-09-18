@@ -274,7 +274,7 @@ public class ReimbDAO {
 
             ptsmt.executeUpdate();
 
-            return "Request created" + reimb.getReimb_id();
+            return "Request Created ID: " + reimb.getReimb_id();
             
         } catch (SQLException e) {
             logger.warn("DataSourceException at {}, error message {}", LocalDateTime.now().format(format), e.getMessage());

@@ -221,7 +221,7 @@ public class ReimbService {
             newRequest.setType("200002");
         } else if (newRequest.getType().trim().toUpperCase().equals("FOOD")) {
             newRequest.setType("200003");
-        } else if (newRequest.getType().trim().toUpperCase().equals("OTHEr")) {
+        } else if (newRequest.getType().trim().toUpperCase().equals("OTHER")) {
             newRequest.setType("200004");
         } else {
             logger.info("Invalid request at {}", LocalDateTime.now().format(format));

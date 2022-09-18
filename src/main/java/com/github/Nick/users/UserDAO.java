@@ -44,54 +44,25 @@ public class UserDAO {
         }
 
     }
-
-    //TODO convert to new database
-    // public String deleteEntry(User user) {
-
-    //     String sqlDelete = "DELETE FROM tasks.user_task " +
-    //                     "WHERE name = ?";
-
-    //     getAllUsers();
-
-    //     try (Connection conn = ConnectionFactory.getInstance().getConnection()) {
-
-    //         PreparedStatement pstmt = conn.prepareStatement(sqlDelete);
-    //         pstmt.setString(1, user.getName().trim().toUpperCase());
-
-    //         pstmt.executeUpdate();
-
-    //     } catch (Exception e) {
-    //         System.err.println("Something went wrong when connecting to database.");
-    //         e.printStackTrace();
-    //     }
-    //     return "Entry removed";
-    // }
     
     public String save(User user) {
         String sql = "INSERT INTO ers_users (user_id, username, email, password, given_name, surname, is_active, role_id) " +
-                        "VALUES (?, ?, ?, ?, ?, ?, ?, '3')";
+                        "VALUES (?, ?, ?, ?, ?, ?, ?, '4')";
 
         try (Connection conn = ConnectionFactory.getInstance().getConnection()) {
 
             PreparedStatement pstmt = conn.prepareStatement(sql);
-            System.out.println("id: " + user.getUser_id());
             pstmt.setString(1, user.getUser_id().trim());
-            System.out.println("username: " + user.getUsername());
             pstmt.setString(2, user.getUsername().trim());
-            System.out.println("email: " + user.getEmail());
             pstmt.setString(3, user.getEmail().trim());
-            System.out.println("password: " + user.getPassword());
             pstmt.setString(4, user.getPassword().trim());
-            System.out.println("name: " + user.getGiven_name());
             pstmt.setString(5, user.getGiven_name().trim());
-            System.out.println("surname: " + user.getSurname());
             pstmt.setString(6, user.getSurname().trim());
-            System.out.println("Active: " + user.getIs_active());
             pstmt.setBoolean(7, user.getIs_active());
             
             pstmt.executeUpdate();
 
-            return user.getUsername() + " added.";
+            return user.getUsername() + " has been added.";
 
         } catch (SQLException e) {
             logger.warn("Error connecting to database at {}, error message {}", LocalDateTime.now().format(format), e.getMessage());
@@ -224,19 +195,79 @@ public class UserDAO {
         return null;
     }
 
-    public String updateUserEmail (String email, String user_id) {
+    public String updateUserEmail (String email, String username) {
 
-        String sql = "UPDATE ers_users SET email = ? WHERE user_id = ";
+        String sql = "UPDATE ers_users SET email = ? WHERE username = ?";
 
         try (Connection conn = ConnectionFactory.getInstance().getConnection()) {
 
             PreparedStatement pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, email);
-            pstmt.setString(2, user_id);
+            pstmt.setString(2, username);
 
             pstmt.executeUpdate();
 
             return "Email Updated";
+
+        } catch (SQLException e) {
+            logger.warn("Error connecting to database at {}, error message {}", LocalDateTime.now().format(format), e.getMessage());
+            throw new DataSourceException(e);
+        }
+    }
+
+    public String updateUserActive (boolean active, String username) {
+
+        String sql = "UPDATE ers_users SET is_active = ? WHERE username = ?";
+
+        try (Connection conn = ConnectionFactory.getInstance().getConnection()) {
+
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setBoolean(1, active);
+            pstmt.setString(2, username);
+
+            pstmt.executeUpdate();
+
+            return "Active Status Updated";
+
+        } catch (SQLException e) {
+            logger.warn("Error connecting to database at {}, error message {}", LocalDateTime.now().format(format), e.getMessage());
+            throw new DataSourceException(e);
+        }
+    }
+
+    public String updateUserRole (String role, String username) {
+
+        String sql = "UPDATE ers_users SET role_id = ? WHERE username = ?";
+
+        try (Connection conn = ConnectionFactory.getInstance().getConnection()) {
+
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, role);
+            pstmt.setString(2, username);
+
+            pstmt.executeUpdate();
+
+            return "Role Status Updated";
+
+        } catch (SQLException e) {
+            logger.warn("Error connecting to database at {}, error message {}", LocalDateTime.now().format(format), e.getMessage());
+            throw new DataSourceException(e);
+        }
+    }
+
+    public String deactivateUser(boolean active, String username) {
+
+        String sql = "UPDATE ers_users set is_active = ? WHERE username = ?";
+
+        try (Connection conn = ConnectionFactory.getInstance().getConnection()) {
+
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setBoolean(1, active);
+            pstmt.setString(2, username);
+
+            pstmt.executeUpdate();
+
+            return "Deactivated: ";
 
         } catch (SQLException e) {
             logger.warn("Error connecting to database at {}, error message {}", LocalDateTime.now().format(format), e.getMessage());

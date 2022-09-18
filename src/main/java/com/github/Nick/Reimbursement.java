@@ -45,9 +45,6 @@ public class Reimbursement {
         webServer.addServlet(rootContext, "AuthServlet", authServlet).addMapping("/auth");
         webServer.addServlet(rootContext, "ReimbServlet", reimbServlet).addMapping("/reimb");
         
-        //TODO complete
-        //? webServer.addContext(rootContext, "ReimbursementServlet", reimbursementServlet).addMapping("/reimbursement");
-        
         //* starting and awaiting web request
         webServer.start();
 

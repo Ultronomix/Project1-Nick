@@ -50,14 +50,14 @@ public class AuthServlet extends HttpServlet {
             logger.info("Establishing session for user: {}", responseBody.getUsername());
             HttpSession userSession = req.getSession();
             userSession.setAttribute("authUser", responseBody);
-
+            
             resp.getWriter().write((jsonMapper.writeValueAsString(responseBody)));
-
+            
             logger.info("Post request successfully processed at {}", LocalDateTime.now().format(format));
-
-        //* json exception response message
+            
+            //* json exception response message
         } catch (InvalidRequestException | JsonMappingException e) {
-            logger.warn("Error processing request at {}, error message {}", LocalDateTime.now().format(format), e.getMessage());
+            logger.warn("Invalid processing request at {}, error message {}", LocalDateTime.now().format(format), e.getMessage());
             resp.setStatus(400);//* Bad request
             resp.getWriter().write(jsonMapper.writeValueAsString(new ErrorResponse(400, e.getMessage())));
         } catch (AuthenticationException e) {
@@ -68,13 +68,13 @@ public class AuthServlet extends HttpServlet {
             logger.warn("A data source error occurs at {}, error message {}", LocalDateTime.now().format(format), e.getMessage());
             resp.setStatus(500); //* Internal error
             resp.getWriter().write(jsonMapper.writeValueAsString(new ErrorResponse(500, e.getMessage())));
-        } catch (RuntimeException e) { // TODO edit inactive user response
-            resp.getWriter().write(jsonMapper.writeValueAsString("User inactive"));
-        }
+        } 
+        
     }
 
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         req.getSession().invalidate(); // logs out the user
+        resp.getWriter().write("User has been logged out.");
     }
 }

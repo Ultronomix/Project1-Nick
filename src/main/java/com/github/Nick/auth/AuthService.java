@@ -22,7 +22,6 @@ public class AuthService {
         this.userDAO = userDAO;
     }
 
-    //TODO edit conditions
     public UserResponse authenticate(Credentials credentials) {
 
         
@@ -45,7 +44,7 @@ public class AuthService {
                 return user;
             } else {
                 logger.warn("Inactive user tried to log in at {}", LocalDateTime.now().format(format));
-                throw new InvalidRequestException("User is inactive");
+                throw new InvalidRequestException("User unable to log in due to inactive");
             }
 
         } catch (ResourceNotFoundException e) {
