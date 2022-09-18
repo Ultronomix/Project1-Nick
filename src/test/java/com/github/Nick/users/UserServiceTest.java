@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -14,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.checkerframework.checker.units.qual.m;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -520,18 +522,67 @@ public class UserServiceTest {
        });
     }
 
+    
     @Test
-    public void testUpdateUser_EmailNotNull () {
-
+    public void testUpdateUser_NotNull() {
+        
         UpdateUserRequest updateUser = new UpdateUserRequest();
         updateUser.setUsername("test");
         updateUser.setEmail("test@test.com");
+        updateUser.setGiven_name("Tester");
+        updateUser.setSurname("testing");
+        updateUser.setIs_active(true);
+        updateUser.setRole("admin");
 
         when(mockUserDAO.updateUserEmail(anyString(), anyString())).thenReturn("Email Updated");
+        when(mockUserDAO.updateUserActive(anyBoolean(), anyString())).thenReturn("Active Status Updated");
+        when(mockUserDAO.updateUserRole(anyString(), anyString())).thenReturn("Role Status Updated");
+        
+        ResourceCreationResponse actual = sut.updateUser(updateUser);
+        ResourceCreationResponse expected = new ResourceCreationResponse("Updated User " + updateUser.getUsername());
+        
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void testUpdateUser_NullData() {
+        
+        UpdateUserRequest updateUser = new UpdateUserRequest();
+        updateUser.setUsername("test");
+        updateUser.setEmail(null);
+        updateUser.setGiven_name(null);
+        updateUser.setSurname(null);
+        updateUser.setRole("Finance Manager");
+
+        when(mockUserDAO.updateUserRole(anyString(), anyString())).thenReturn("Role Status Updated");
+        
+        ResourceCreationResponse actual = sut.updateUser(updateUser);
+        ResourceCreationResponse expected = new ResourceCreationResponse("Updated User " + updateUser.getUsername());
+        
+        assertEquals(expected, actual);
+    }
+    @Test
+    public void testUpdateUser_Role_Invalid () {
+    
+        UpdateUserRequest updateUser = new UpdateUserRequest();
+        updateUser.setUsername("test");
+        updateUser.setRole("rol");
+        
+        assertThrows(InvalidRequestException.class, () -> {
+            sut.updateUser(updateUser);
+        });
+    }
+
+    @Test
+    public void testUpdateUser_Role_Employee() {
+
+        UpdateUserRequest updateUser = new UpdateUserRequest();
+        updateUser.setUsername("tester");
+        updateUser.setRole("Employee");
 
         ResourceCreationResponse actual = sut.updateUser(updateUser);
-        ResourceCreationResponse expected = new ResourceCreationResponse("Updated User test");
+        ResourceCreationResponse expected = new ResourceCreationResponse("Updated User " + updateUser.getUsername());
 
-       assertEquals(expected, actual);
+        assertEquals(expected, actual);
     }
 }
