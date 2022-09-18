@@ -3,6 +3,8 @@ package com.github.Nick.users;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -161,7 +163,7 @@ public class UserServiceTest {
     }
 
     @Test
-    void testRegister_InvalidRequestException_Null() {
+    public void testRegister_InvalidRequestException_Null() {
 
         NewUserRequest newUser = new NewUserRequest();
 
@@ -175,7 +177,7 @@ public class UserServiceTest {
     }
     
     @Test
-    void testRegister_InvalidRequestException_GivenName_EmptyString() {
+    public void testRegister_InvalidRequestException_GivenName_EmptyString() {
 
         NewUserRequest newUser = new NewUserRequest();
         newUser.setGiven_name("");        
@@ -188,7 +190,7 @@ public class UserServiceTest {
     }
 
     @Test
-    void testRegister_InvalidRequestException_GivenName_Null() {
+    public void testRegister_InvalidRequestException_GivenName_Null() {
 
         NewUserRequest newUser = new NewUserRequest();   
         newUser.setGiven_name(null);
@@ -230,7 +232,7 @@ public class UserServiceTest {
     }
 
     @Test
-    void testRegister_InvalidRequestException_Surname_EmptyString() {
+    public void testRegister_InvalidRequestException_Surname_EmptyString() {
 
         NewUserRequest newUser = new NewUserRequest();   
         newUser.setGiven_name("Tester");
@@ -251,8 +253,8 @@ public class UserServiceTest {
     }
 
     
-    //@Test
-    void testRegister_NullPointerException_Surname_Null() {
+    @Test
+    public void testRegister_InvalidRequestException_Surname_Null() {
 
         NewUserRequest newUser = new NewUserRequest();   
         newUser.setGiven_name("Tester");
@@ -265,7 +267,7 @@ public class UserServiceTest {
 
         User user = newUser.extractEntity();
 
-        assertThrows(NullPointerException.class, () -> {
+        assertThrows(InvalidRequestException.class, () -> {
             sut.register(newUser);
         });
 
@@ -273,7 +275,7 @@ public class UserServiceTest {
     }
     
     @Test
-    void testRegister_InvalidRequestException_Email_Null() {
+    public void testRegister_InvalidRequestException_Email_Null() {
 
         NewUserRequest newUser = new NewUserRequest();   
         newUser.setGiven_name("Tester");
@@ -294,7 +296,7 @@ public class UserServiceTest {
     }
     
     @Test
-    void testRegister_InvalidRequestException_Email_EmptyString() {
+    public void testRegister_InvalidRequestException_Email_EmptyString() {
 
         NewUserRequest newUser = new NewUserRequest();   
         newUser.setGiven_name("Tester");
@@ -315,7 +317,7 @@ public class UserServiceTest {
     }
 
     @Test
-    void testRegister_InvalidRequestException_Username_Null() {
+    public void testRegister_InvalidRequestException_Username_Null() {
 
         NewUserRequest newUser = new NewUserRequest();   
         newUser.setGiven_name("Tester");
@@ -336,7 +338,7 @@ public class UserServiceTest {
     }
 
     @Test
-    void testRegister_InvalidRequestException_Username_EmptyString() {
+    public void testRegister_InvalidRequestException_Username_EmptyString() {
 
         NewUserRequest newUser = new NewUserRequest();   
         newUser.setGiven_name("Tester");
@@ -357,7 +359,7 @@ public class UserServiceTest {
     }
 
     @Test
-    void testRegister_InvalidRequestException_Password_EmptyString() {
+    public void testRegister_InvalidRequestException_Password_EmptyString() {
 
         NewUserRequest newUser = new NewUserRequest();   
         newUser.setGiven_name("Tester");
@@ -397,6 +399,8 @@ public class UserServiceTest {
 
         verify(mockUserDAO, times(0)).save(user);
     }
+
+    //@Test
 
     @Test
     void testRegister_ResourcePersistenceException_IsEmailTaken_true() {
@@ -440,79 +444,94 @@ public class UserServiceTest {
         verify(mockUserDAO, times(1)).isUsernameTaken(newUser.getUsername());
     }
 
-    // @Test
-    // public void testRegister_Extract() {
+    @Test
+    public void testRegister_isIsActive_false() {
         
-    //     NewUserRequest newUser = new NewUserRequest();   
-    //     newUser.setGiven_name("Tester");
-    //     newUser.setSurname("Test");
-    //     newUser.setEmail("test@test.com");
-    //     newUser.setIs_active(true);
-    //     newUser.setPassword("password");
-    //     newUser.setUser_id("6");
-    //     newUser.setUsername("Tester");
-    //     User user = newUser.extractEntity();
+        NewUserRequest newUser = new NewUserRequest();   
+        newUser.setUser_id("6");
+        newUser.setUsername("Tester");
+        newUser.setPassword("password");
+        newUser.setEmail("test@test.com");
+        newUser.setGiven_name("Tester");
+        newUser.setSurname("Test");
 
-    //     when(mockUserDAO.save(user)).thenReturn(user.getUser_id());
-
-    //     ResourceCreationResponse expected = new ResourceCreationResponse(user.getUser_id());
-
-    //     String id = mockUserDAO.save(user);
-
-    //     ResourceCreationResponse actual = new ResourceCreationResponse(id);
-
-    //     assertNotNull(actual);
-    //     assertEquals(expected, actual);
-    // }
-
-    //@Test
-    // public void testUpdateUser_InvalidRequestException_Null() {
-
-    //     assertThrows(InvalidRequestException.class, () -> {
-    //         sut.updateUser(null, "1");
-    //     });
-
-    //     verify(mockUserDAO, times(0)).updateUser(null);
-    // }
+        User user = newUser.extractEntity();
+        
+        when(mockUserDAO.save(user)).thenReturn(user.getUsername() + " has been added.");
+        
+        ResourceCreationResponse actual = sut.register(newUser);
+        ResourceCreationResponse expected = new ResourceCreationResponse("Tester has been added.");
+        assertNotNull(actual);
+        assertEquals(expected, actual);
+    }
 
     @Test
-    public void testUpdateUser_InvalidRequestException_Email_NotNull() {
+    public void testRegister_isIsActive_true() {
+
+        NewUserRequest newUser = new NewUserRequest();   
+        newUser.setUser_id("6");
+        newUser.setUsername("Tester");
+        newUser.setPassword("password");
+        newUser.setEmail("test@test.com");
+        newUser.setGiven_name("Tester");
+        newUser.setSurname("Test");
+        newUser.setIs_active(true);
+
+        User user = newUser.extractEntity();
+        
+        when(mockUserDAO.save(user)).thenReturn(user.getUsername() + " has been added.");
+        
+        ResourceCreationResponse actual = sut.register(newUser);
+        ResourceCreationResponse expected = new ResourceCreationResponse("Tester has been added.");
+        assertNotNull(actual);
+        assertEquals(expected, actual);
+    }
+    
+    @Test
+    public void testdeleteUser_InvalidRequestException_Null() {
+
+        assertThrows(InvalidRequestException.class, () -> {
+            sut.deleteUser(null);
+        });
+
+        verify(mockUserDAO, times(0)).deactivateUser(anyBoolean(), anyString());
+    }
+
+    @Test
+    public void testdeleteUser_GivenUsername() {
 
         UpdateUserRequest updateUser = new UpdateUserRequest();
-        updateUser.setGiven_name("Test");
-        updateUser.setIs_active(true);
-        updateUser.setSurname("tester");
-        updateUser.setPassword("password");
-        updateUser.setEmail("test@test.com");
+        updateUser.setUsername("Tester");
+        updateUser.setIs_active(false);
 
-        String id = "2";
-        when(mockUserDAO.updateUserEmail(updateUser.getEmail(),id )).thenReturn("Email Updated");
+        when(mockUserDAO.deactivateUser(updateUser.getIs_active(), updateUser.getUsername())).thenReturn("Deactivated: ");
 
-        String actual = mockUserDAO.updateUserEmail(updateUser.getEmail(), id);
-        String expected = "Email Updated";
+        ResourceCreationResponse actual = sut.deleteUser(updateUser);
+        ResourceCreationResponse expected = new ResourceCreationResponse("Deactivated: " + updateUser.getUsername());
 
         assertEquals(expected, actual);
     }
 
     @Test
-    public void testUpdateUser_Email_Updated() {
+    public void testUpdateUser_Null() {
+
+       assertThrows(InvalidRequestException.class, () -> {
+        sut.updateUser(null);
+       });
+    }
+
+    @Test
+    public void testUpdateUser_EmailNotNull () {
 
         UpdateUserRequest updateUser = new UpdateUserRequest();
-        updateUser.setGiven_name("Test");
-        updateUser.setIs_active(true);
-        updateUser.setSurname("tester");
-        updateUser.setPassword("password");
+        updateUser.setUsername("test");
         updateUser.setEmail("test@test.com");
 
         when(mockUserDAO.updateUserEmail(anyString(), anyString())).thenReturn("Email Updated");
-        ResourceCreationResponse expected = new ResourceCreationResponse("Email Updated");
-    
-        String user_id = "2";
-        String email = updateUser.extractEntity().getEmail();
-        String update = mockUserDAO.updateUserEmail(email, user_id);
 
-        ResourceCreationResponse actual = new ResourceCreationResponse(update);
-        
-        assertEquals(expected, actual);
+        ResourceCreationResponse actual = sut.updateUser(updateUser);
+        ResourceCreationResponse expected = new ResourceCreationResponse("Updated User test");
+
+       assertEquals(expected, actual);
     }
 }
