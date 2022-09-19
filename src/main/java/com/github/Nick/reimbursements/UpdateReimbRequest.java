@@ -11,7 +11,7 @@ public class UpdateReimbRequest implements Request<Reimb> {
     private String status;
     
     //? User
-    private int amount;
+    private double amount;
     private String description;
     private String type;
 
@@ -36,11 +36,11 @@ public class UpdateReimbRequest implements Request<Reimb> {
         this.status = status;
     }
     
-    public int getAmount() {
+    public double getAmount() {
         return amount;
     }
 
-    public void setAmount(int amount) {
+    public void setAmount(double amount) {
         this.amount = amount;
     }
 

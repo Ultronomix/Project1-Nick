@@ -128,6 +128,8 @@ public class ReimbService {
             reimbStatueChange = "100001";
         } else if (reimbStatueChange.equals("DENIED")) {
             reimbStatueChange = "100003";
+        } else {
+            throw new InvalidRequestException("Status must be 'Approved' or 'Denied'.");
         }
 
         String updated = reimbDAO.updateRequestStatus(reimbStatueChange, reimbToUpdate, resolver_id);
@@ -154,7 +156,7 @@ public class ReimbService {
         }
 
         if (newAmount > 0) {
-            if (newAmount > 9999.99 || newAmount == 0.0) {
+            if (newAmount > 9999.99) {
                 logger.warn("Invalid amount enter at {}", LocalDateTime.now().format(format));
                 throw new InvalidRequestException("Amount must be between 0 and 10,000");
             }
@@ -165,7 +167,7 @@ public class ReimbService {
         }
         if (newType != null) {
             if (!newType.toUpperCase().equals("LODGING") && !newType.toUpperCase().equals("TRAVEL")
-                && !newType.toUpperCase().equals("FOOD") && !newType.toUpperCase().equals("Other")) {
+                && !newType.toUpperCase().equals("FOOD") && !newType.toUpperCase().equals("OTHER")) {
                 logger.warn("Invalid type at {}", LocalDateTime.now().format(format));
                 throw new InvalidRequestException("Type must be 'Lodging', 'Travel', 'Food' " +
                                                         "or 'Other'");
@@ -184,7 +186,7 @@ public class ReimbService {
             }
             reimbDAO.updateUserType(reimbIdToSearch, newType);
         }
-        return new ResourceCreationResponse("Updated requests") ;
+        return new ResourceCreationResponse("Updated request") ;
  
     }
 
@@ -206,11 +208,11 @@ public class ReimbService {
             logger.info("Invalid request at {}", LocalDateTime.now().format(format));
             throw new InvalidRequestException("Description cannot be empty.");
         }
-        if (newRequest.getPayment_id() == null || newRequest.getReimb_id().trim().length() <= 0) {
+        if (newRequest.getPayment_id() == null || newRequest.getPayment_id().trim().length() <= 0) {
             logger.info("Invalid request at {}", LocalDateTime.now().format(format));
             throw new InvalidRequestException("Payment id cannot be empty.");
         }
-        if (newRequest.getType() == null || newRequest.getReimb_id().trim().length() <= 0) {
+        if (newRequest.getType() == null || newRequest.getType().trim().length() <= 0) {
             logger.info("Invalid request at {}", LocalDateTime.now().format(format));
             throw new InvalidRequestException("Type cannot be empty. Enter 'Lodging', 'Travel', " +
                                                 "'Food', or 'Other'.");

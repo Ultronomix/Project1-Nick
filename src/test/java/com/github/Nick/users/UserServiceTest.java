@@ -558,6 +558,25 @@ public class UserServiceTest {
         
         assertEquals(expected, actual);
     }
+
+    @Test
+    public void testUpdateUser_Email() {
+        
+        UpdateUserRequest updateUser = new UpdateUserRequest();
+        updateUser.setUsername("test");
+        updateUser.setEmail("");
+        updateUser.setGiven_name("");
+        updateUser.setSurname("");
+        updateUser.setRole("Finance Manager");
+
+        when(mockUserDAO.updateUserRole(anyString(), anyString())).thenReturn("Role Status Updated");
+        
+        ResourceCreationResponse actual = sut.updateUser(updateUser);
+        ResourceCreationResponse expected = new ResourceCreationResponse("Updated User " + updateUser.getUsername());
+        
+        assertEquals(expected, actual);
+    }
+
     @Test
     public void testUpdateUser_Role_Invalid () {
     
@@ -576,6 +595,19 @@ public class UserServiceTest {
         UpdateUserRequest updateUser = new UpdateUserRequest();
         updateUser.setUsername("tester");
         updateUser.setRole("Employee");
+
+        ResourceCreationResponse actual = sut.updateUser(updateUser);
+        ResourceCreationResponse expected = new ResourceCreationResponse("Updated User " + updateUser.getUsername());
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void testUpdateUser_role_null() {
+
+        UpdateUserRequest updateUser = new UpdateUserRequest();
+        updateUser.setUsername("tester");
+        updateUser.setRole(null);
 
         ResourceCreationResponse actual = sut.updateUser(updateUser);
         ResourceCreationResponse expected = new ResourceCreationResponse("Updated User " + updateUser.getUsername());

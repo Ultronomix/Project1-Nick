@@ -15,6 +15,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import com.github.Nick.common.ResourceCreationResponse;
 import com.github.Nick.common.exceptions.InvalidRequestException;
 import com.github.Nick.common.exceptions.ResourceNotFoundException;
 
@@ -238,6 +239,218 @@ public class ReimbServiceTest {
         List<ReimbResponse> actualO = sut.getReimbByType("Other");
         List<ReimbResponse> expectedO = result;
 
+        assertEquals(expectedO, actualO);
+    }
+
+    @Test
+    public void testUpdateReimb() {
+        
+        assertThrows(InvalidRequestException.class, () -> {
+            sut.updateReimb(null, "1");
+        });
+
+        UpdateReimbRequest updateReimb = new UpdateReimbRequest();
+        updateReimb.setReimbId("1");
+        updateReimb.setStatus("Approved");
+        String id = "2";
+        
+        when(mockReimbDAO.updateRequestStatus(anyString(), anyString(), anyString())).thenReturn("Updated status");
+        ResourceCreationResponse actualA = sut.updateReimb(updateReimb, id);
+        ResourceCreationResponse expectedA = new ResourceCreationResponse("Updated status");
+
+        assertEquals(expectedA, actualA);
+
+        UpdateReimbRequest updateReimb2 = new UpdateReimbRequest();
+        updateReimb2.setReimbId("1");
+        updateReimb2.setStatus("Denied");
+        
+        when(mockReimbDAO.updateRequestStatus(anyString(), anyString(), anyString())).thenReturn("Updated status");
+        ResourceCreationResponse actualD = sut.updateReimb(updateReimb2, id);
+        ResourceCreationResponse expectedD = new ResourceCreationResponse("Updated status");
+
+        assertEquals(expectedD, actualD);
+
+        UpdateReimbRequest updateReimb3 = new UpdateReimbRequest();
+        updateReimb3.setReimbId("1");
+        updateReimb3.setStatus("Denie");
+        
+        assertThrows(InvalidRequestException.class, () -> {
+            sut.updateReimb(updateReimb3, id);
+        });
+    }
+
+    @Test
+    public void testUpdateUserReimb() {
+        
+        UpdateReimbRequest updateReimb = new UpdateReimbRequest();
+        updateReimb.setReimbId("1");
+        updateReimb.setDescription("Test");
+        updateReimb.setStatus("Approved");
+
+        assertThrows(InvalidRequestException.class, () -> {
+            sut.updateUserReimb(null);
+        });
+
+        assertThrows(InvalidRequestException.class, () -> {
+            sut.updateUserReimb(updateReimb);
+        });
+        
+        updateReimb.setStatus(null);
+        updateReimb.setAmount(30000);
+        when(mockReimbDAO.isPending(updateReimb.getReimbId())).thenReturn(false);
+
+        assertThrows(InvalidRequestException.class, () -> {
+            sut.updateUserReimb(updateReimb);
+        });
+
+        when(mockReimbDAO.isPending(updateReimb.getReimbId())).thenReturn(true);
+
+        assertThrows(InvalidRequestException.class, () -> {
+            sut.updateUserReimb(updateReimb);
+        });
+
+        when(mockReimbDAO.updateUserAmount(updateReimb.getReimbId(), updateReimb.getAmount())).thenReturn("Amount ");
+        updateReimb.setAmount(300);
+        ResourceCreationResponse actualA = sut.updateUserReimb(updateReimb);
+        ResourceCreationResponse expectedA = new ResourceCreationResponse("Updated request");
+        assertEquals(expectedA, actualA);
+
+        updateReimb.setAmount(0);
+        updateReimb.setDescription(null);
+        updateReimb.setType("Lodging");
+
+        ResourceCreationResponse actualTL = sut.updateUserReimb(updateReimb);
+        ResourceCreationResponse expectedTL = new ResourceCreationResponse("Updated request");
+        assertEquals(expectedTL, actualTL);
+
+        updateReimb.setType("Travel");
+
+        ResourceCreationResponse actualTT = sut.updateUserReimb(updateReimb);
+        ResourceCreationResponse expectedTT = new ResourceCreationResponse("Updated request");
+        assertEquals(expectedTT, actualTT);
+
+        updateReimb.setType("Food");
+
+        ResourceCreationResponse actualTF = sut.updateUserReimb(updateReimb);
+        ResourceCreationResponse expectedTF = new ResourceCreationResponse("Updated request");
+        assertEquals(expectedTF, actualTF);
+
+        updateReimb.setType("Other");
+
+        ResourceCreationResponse actualTO = sut.updateUserReimb(updateReimb);
+        ResourceCreationResponse expectedTO = new ResourceCreationResponse("Updated request");
+        assertEquals(expectedTO, actualTO);
+
+        updateReimb.setType("Wrong");
+
+        assertThrows(InvalidRequestException.class, () -> {
+            sut.updateUserReimb(updateReimb);
+        });
+    }
+
+    @Test
+    public void testCreateRequest() {
+        
+        NewReimbRequest newRequest = new NewReimbRequest();
+
+        assertThrows(InvalidRequestException.class, () -> {
+            sut.createRequest(null, "2");
+        });
+
+        newRequest.setReimb_id(null);
+        newRequest.setAmount(200);
+
+        assertThrows(InvalidRequestException.class, () -> {
+            sut.createRequest(newRequest, "2");
+        });
+
+        newRequest.setReimb_id("");
+
+        assertThrows(InvalidRequestException.class, () -> {
+            sut.createRequest(newRequest, "2");
+        });
+
+        newRequest.setReimb_id("1");
+        newRequest.setAmount(0);
+
+        assertThrows(InvalidRequestException.class, () -> {
+            sut.createRequest(newRequest, "2");
+        });
+
+        newRequest.setAmount(10000);
+
+        assertThrows(InvalidRequestException.class, () -> {
+            sut.createRequest(newRequest, "2");
+        });
+
+        newRequest.setAmount(500);
+
+        assertThrows(InvalidRequestException.class, () -> {
+            sut.createRequest(newRequest, "2");
+        });
+
+        newRequest.setDescription("");
+
+        assertThrows(InvalidRequestException.class, () -> {
+            sut.createRequest(newRequest, "2");
+        });
+
+        newRequest.setDescription("description");
+
+        assertThrows(InvalidRequestException.class, () -> {
+            sut.createRequest(newRequest, "2");
+        });
+
+        newRequest.setPayment_id("");
+
+        assertThrows(InvalidRequestException.class, () -> {
+            sut.createRequest(newRequest, "2");
+        });
+
+        newRequest.setPayment_id("payment_id");
+
+        assertThrows(InvalidRequestException.class, () -> {
+            sut.createRequest(newRequest, "2");
+        });
+
+        newRequest.setType("");
+
+        assertThrows(InvalidRequestException.class, () -> {
+            sut.createRequest(newRequest, "2");
+        });
+
+        newRequest.setType("wrong");
+
+        assertThrows(InvalidRequestException.class, () -> {
+            sut.createRequest(newRequest, "2");
+        });
+
+        newRequest.setType("Lodging");
+
+        when(mockReimbDAO.newRequest(newRequest.extractEntity(), "2")).thenReturn("Request Created ID: " + newRequest.getReimb_id());
+        ResourceCreationResponse actualL = sut.createRequest(newRequest, "2");
+        ResourceCreationResponse expectedL = new ResourceCreationResponse(null);
+        assertEquals(expectedL, actualL);
+
+        newRequest.setType("Travel");
+    
+        when(mockReimbDAO.newRequest(newRequest.extractEntity(), "2")).thenReturn("Request Created ID: " + newRequest.getReimb_id());
+        ResourceCreationResponse actualT = sut.createRequest(newRequest, "2");
+        ResourceCreationResponse expectedT = new ResourceCreationResponse(null);
+        assertEquals(expectedT, actualT);
+
+        newRequest.setType("Food");
+    
+        when(mockReimbDAO.newRequest(newRequest.extractEntity(), "2")).thenReturn("Request Created ID: " + newRequest.getReimb_id());
+        ResourceCreationResponse actualF = sut.createRequest(newRequest, "2");
+        ResourceCreationResponse expectedF = new ResourceCreationResponse(null);
+        assertEquals(expectedF, actualF);
+
+        newRequest.setType("Other");
+    
+        when(mockReimbDAO.newRequest(newRequest.extractEntity(), "2")).thenReturn("Request Created ID: " + newRequest.getReimb_id());
+        ResourceCreationResponse actualO = sut.createRequest(newRequest, "2");
+        ResourceCreationResponse expectedO = new ResourceCreationResponse(null);
         assertEquals(expectedO, actualO);
     }
 }
