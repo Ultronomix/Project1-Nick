@@ -62,7 +62,7 @@ public class UserDAO {
             
             pstmt.executeUpdate();
 
-            return user.getUsername() + " has been added.";
+            return user.getUsername() + " has been added. ID: " + user.getUser_id();
 
         } catch (SQLException e) {
             logger.warn("Error connecting to database at {}, error message {}", LocalDateTime.now().format(format), e.getMessage());

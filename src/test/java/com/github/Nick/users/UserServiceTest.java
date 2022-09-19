@@ -607,7 +607,7 @@ public class UserServiceTest {
 
         UpdateUserRequest updateUser = new UpdateUserRequest();
         updateUser.setUsername("tester");
-        updateUser.setRole(null);
+        updateUser.setRole("Employee");
 
         ResourceCreationResponse actual = sut.updateUser(updateUser);
         ResourceCreationResponse expected = new ResourceCreationResponse("Updated User " + updateUser.getUsername());

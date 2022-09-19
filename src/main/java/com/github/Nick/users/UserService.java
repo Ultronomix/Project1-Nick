@@ -69,7 +69,7 @@ public class UserService {
     //? Register a new user
     public ResourceCreationResponse register (NewUserRequest newUser) {
 
-        if (newUser == null || newUser.getUser_id() == null || newUser.getUsername() == null ||
+        if (newUser == null || /*newUser.getUser_id() == null ||*/ newUser.getUsername() == null ||
             newUser.getEmail() == null || newUser.getPassword() == null || newUser.getGiven_name() == null ||
             newUser.getSurname() == null) {
             throw new InvalidRequestException("Provided request cannot be empty. Provide 'user_id', " +
